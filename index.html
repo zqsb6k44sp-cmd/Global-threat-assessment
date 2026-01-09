@@ -15,9 +15,26 @@
             <span class="status" id="status">Ready</span>
         </div>
         <div class="header-right">
-            <button class="refresh-btn monitors-btn" onclick="openMonitorForm()">+ Monitor</button>
-            <button class="settings-btn" onclick="toggleSettings()">Panels</button>
-            <button class="refresh-btn" id="refreshBtn" onclick="refreshAll()">Refresh</button>
+            <!-- Hamburger menu (hidden on desktop) -->
+            <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <!-- Mobile menu dropdown -->
+            <div class="mobile-menu" id="mobileMenu">
+                <button class="refresh-btn monitors-btn" onclick="openMonitorForm(); closeMobileMenu()">+ Monitor</button>
+                <button class="settings-btn" onclick="toggleSettings(); closeMobileMenu()">Panels</button>
+                <button class="refresh-btn" onclick="refreshAll(); closeMobileMenu()">Refresh</button>
+            </div>
+
+            <!-- Desktop nav (hidden on mobile) -->
+            <div class="desktop-nav">
+                <button class="refresh-btn monitors-btn" onclick="openMonitorForm()">+ Monitor</button>
+                <button class="settings-btn" onclick="toggleSettings()">Panels</button>
+                <button class="refresh-btn" id="refreshBtn" onclick="refreshAll()">Refresh</button>
+            </div>
         </div>
     </header>
 

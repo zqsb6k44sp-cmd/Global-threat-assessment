@@ -42,6 +42,41 @@ window.saveMonitor = () => saveMonitor(refreshAll);
 window.editMonitor = editMonitor;
 window.deleteMonitor = (id) => deleteMonitor(id, refreshAll);
 
+// Mobile menu functions
+function getMobileMenuElements() {
+    return {
+        menu: document.getElementById('mobileMenu'),
+        btn: document.getElementById('hamburgerBtn')
+    };
+}
+
+function toggleMobileMenu() {
+    const { menu, btn } = getMobileMenuElements();
+    menu?.classList.toggle('open');
+    btn?.classList.toggle('active');
+}
+
+function closeMobileMenu() {
+    const { menu, btn } = getMobileMenuElements();
+    menu?.classList.remove('open');
+    btn?.classList.remove('active');
+}
+
+// Close mobile menu on outside click or resize to desktop
+document.addEventListener('click', (e) => {
+    const { menu, btn } = getMobileMenuElements();
+    const isOpen = menu?.classList.contains('open');
+    const clickedOutside = !menu?.contains(e.target) && !btn?.contains(e.target);
+    if (isOpen && clickedOutside) closeMobileMenu();
+});
+
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) closeMobileMenu();
+});
+
+window.toggleMobileMenu = toggleMobileMenu;
+window.closeMobileMenu = closeMobileMenu;
+
 // Staged refresh - loads critical data first for faster perceived startup
 async function refreshAll() {
     console.log('refreshAll started');

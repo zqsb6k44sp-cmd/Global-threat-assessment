@@ -4826,3 +4826,336 @@
         .custom-hotspot-popup-close:hover {
             color: var(--text);
         }
+
+/* ==========================================
+   MOBILE RESPONSIVE STYLES
+   ========================================== */
+
+/* Hamburger Menu Button */
+.hamburger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.hamburger-line {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--text);
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 6px);
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -6px);
+}
+
+/* Mobile Menu Dropdown */
+.mobile-menu {
+    display: none;
+    position: fixed;
+    top: 50px;
+    right: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-top: none;
+    padding: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    z-index: 1000;
+    min-width: 180px;
+    box-shadow: -2px 4px 12px rgba(0,0,0,0.5);
+}
+
+.mobile-menu.open {
+    display: flex;
+}
+
+.mobile-menu button {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+}
+
+/* Desktop navigation wrapper */
+.desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* ==========================================
+   TABLET BREAKPOINT (768px)
+   ========================================== */
+@media (max-width: 768px) {
+    /* Header adjustments */
+    .header {
+        padding: 0.5rem 1rem;
+        position: sticky;
+        top: 0;
+    }
+
+    .header-left {
+        gap: 0.75rem;
+    }
+
+    .title {
+        font-size: 0.7rem;
+    }
+
+    .status {
+        display: none;
+    }
+
+    /* Show hamburger, hide desktop nav */
+    .hamburger-btn {
+        display: flex;
+    }
+
+    .desktop-nav {
+        display: none;
+    }
+
+    /* Map height reduction */
+    .panel[data-panel="map"] {
+        height: 350px !important;
+    }
+
+    #mapSvg {
+        height: 100% !important;
+    }
+
+    /* Hide map legend on mobile */
+    #mapLegend {
+        display: none;
+    }
+
+    /* Panel content adjustments */
+    .panel-content {
+        max-height: 320px;
+    }
+
+    /* Touch-friendly item targets */
+    .item {
+        padding: 0.75rem 1rem;
+        min-height: 44px;
+    }
+
+    .item-title {
+        font-size: 0.75rem;
+        line-height: 1.4;
+    }
+
+    .item-source,
+    .item-time {
+        font-size: 0.6rem;
+    }
+
+    /* Panel header touch targets */
+    .panel-header {
+        padding: 0.6rem 1rem;
+        min-height: 44px;
+        cursor: default;
+    }
+
+    .panel-title {
+        font-size: 0.6rem;
+    }
+
+    .panel-count {
+        font-size: 0.55rem;
+    }
+
+    /* Hide resize handles on mobile */
+    .panel-resize-handle {
+        display: none;
+    }
+
+    /* Settings modal improvements */
+    .settings-content {
+        width: 95%;
+        max-width: none;
+        max-height: 90vh;
+        padding: 1rem;
+    }
+
+    .settings-close {
+        min-height: 48px;
+        font-size: 0.75rem;
+    }
+
+    /* Monitor form modal improvements */
+    .monitor-form {
+        width: 95%;
+        max-width: none;
+        padding: 1rem;
+    }
+
+    .monitor-form-input {
+        font-size: 16px;
+        padding: 0.6rem;
+        min-height: 44px;
+    }
+
+    .monitor-form-actions button {
+        min-height: 48px;
+    }
+
+    /* Toggle switch size increase for touch */
+    .toggle-switch {
+        width: 44px;
+        height: 24px;
+        border-radius: 12px;
+    }
+
+    .toggle-switch::after {
+        width: 20px;
+        height: 20px;
+    }
+
+    .toggle-switch.on::after {
+        transform: translateX(20px);
+    }
+
+    /* Market items */
+    .market-item {
+        padding: 0.6rem 1rem;
+        min-height: 40px;
+    }
+
+    /* Grid sections - single column on mobile */
+    .correlation-sections,
+    .narrative-sections {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .correlation-section-header,
+    .narrative-section-header {
+        padding: 0.5rem;
+    }
+}
+
+/* ==========================================
+   SMALL PHONE BREAKPOINT (480px)
+   ========================================== */
+@media (max-width: 480px) {
+    /* Header compact mode */
+    .header {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .title {
+        font-size: 0.65rem;
+        letter-spacing: 0.05em;
+    }
+
+    .header-left {
+        gap: 0.5rem;
+    }
+
+    /* Map smaller on phones */
+    .panel[data-panel="map"] {
+        height: 280px !important;
+    }
+
+    /* Tighter panel content */
+    .panel-content {
+        max-height: 280px;
+    }
+
+    /* Items */
+    .item {
+        padding: 0.6rem 0.75rem;
+    }
+
+    .item-title {
+        font-size: 0.7rem;
+    }
+
+    /* Mobile menu full width */
+    .mobile-menu {
+        left: 0;
+        min-width: 100%;
+        border-inline: none;
+    }
+
+    /* Full-screen modals on small phones */
+    .settings-modal.open,
+    .monitor-form-overlay.open {
+        align-items: flex-start;
+        padding-top: 0;
+    }
+
+    .settings-content,
+    .monitor-form {
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        border: none;
+        border-radius: 0;
+    }
+
+    /* Wide panel items */
+    .polymarket-item,
+    .contract-item,
+    .intel-item {
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Sector heatmap adjustments */
+    .sector-item {
+        min-width: 50px;
+        font-size: 0.55rem;
+        padding: 0.4rem 0.3rem;
+    }
+
+    /* Commodity items */
+    .commodity-item {
+        min-width: 70px;
+    }
+}
+
+/* ==========================================
+   TOUCH DEVICE ENHANCEMENTS
+   ========================================== */
+@media (hover: none) and (pointer: coarse) {
+    /* Disable hover states, enable active states for touch feedback */
+    .item:hover,
+    .panel-header:hover {
+        background: transparent;
+    }
+
+    .item:active,
+    .panel-header:active {
+        background: var(--surface);
+    }
+
+    /* Hide map tooltip on touch - unusable */
+    #mapTooltip {
+        display: none !important;
+    }
+
+    /* Larger touch targets */
+    button,
+    .toggle-switch,
+    [onclick] {
+        min-height: 44px;
+    }
+}
