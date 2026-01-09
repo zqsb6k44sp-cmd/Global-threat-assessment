@@ -108,22 +108,29 @@
 
                     const path = d3.geoPath().projection(projection);
 
-                    // Hotspots data with descriptions
+                    // Threat level colors
+                    const threatColors = {
+                        high: '#ff4444',
+                        elevated: '#ffcc00',
+                        low: '#00ff88'
+                    };
+
+                    // Hotspots data with descriptions and threat levels
                     const hotspots = [
-                        { name: 'DC', lat: 38.9, lon: -77.0, desc: 'Washington DC — US political center, White House, Pentagon, Capitol' },
-                        { name: 'Moscow', lat: 55.75, lon: 37.6, desc: 'Moscow — Kremlin, Russian military command, sanctions hub' },
-                        { name: 'Beijing', lat: 39.9, lon: 116.4, desc: 'Beijing — CCP headquarters, US-China tensions, tech rivalry' },
-                        { name: 'Kyiv', lat: 50.45, lon: 30.5, desc: 'Kyiv — Ukraine war, NATO expansion, Russian invasion' },
-                        { name: 'Taipei', lat: 25.03, lon: 121.5, desc: 'Taipei — Taiwan Strait tensions, TSMC, China threat' },
-                        { name: 'Tehran', lat: 35.7, lon: 51.4, desc: 'Tehran — Iran nuclear program, proxy conflicts, sanctions' },
-                        { name: 'Tel Aviv', lat: 32.07, lon: 34.78, desc: 'Tel Aviv — Israel-Gaza conflict, regional security, Mossad' },
-                        { name: 'London', lat: 51.5, lon: -0.12, desc: 'London — Financial center, Five Eyes, NATO ally' },
-                        { name: 'Brussels', lat: 50.85, lon: 4.35, desc: 'Brussels — EU/NATO headquarters, European policy' },
-                        { name: 'Pyongyang', lat: 39.03, lon: 125.75, desc: 'Pyongyang — North Korea nuclear threat, Kim regime' },
-                        { name: 'Riyadh', lat: 24.7, lon: 46.7, desc: 'Riyadh — Saudi oil, OPEC+, Middle East power broker' },
-                        { name: 'Delhi', lat: 28.6, lon: 77.2, desc: 'Delhi — India rising power, China border, tech hub' },
-                        { name: 'Singapore', lat: 1.35, lon: 103.82, desc: 'Singapore — Shipping chokepoint, Asian finance hub' },
-                        { name: 'Tokyo', lat: 35.68, lon: 139.76, desc: 'Tokyo — US ally, China tensions, economic power' }
+                        { name: 'DC', lat: 38.9, lon: -77.0, level: 'low', desc: 'Washington DC — US political center, White House, Pentagon, Capitol' },
+                        { name: 'Moscow', lat: 55.75, lon: 37.6, level: 'elevated', desc: 'Moscow — Kremlin, Russian military command, sanctions hub' },
+                        { name: 'Beijing', lat: 39.9, lon: 116.4, level: 'elevated', desc: 'Beijing — CCP headquarters, US-China tensions, tech rivalry' },
+                        { name: 'Kyiv', lat: 50.45, lon: 30.5, level: 'high', desc: 'Kyiv — Active conflict zone, Russian invasion ongoing' },
+                        { name: 'Taipei', lat: 25.03, lon: 121.5, level: 'elevated', desc: 'Taipei — Taiwan Strait tensions, TSMC, China threat' },
+                        { name: 'Tehran', lat: 35.7, lon: 51.4, level: 'high', desc: 'Tehran — Iran nuclear program, proxy conflicts, regional escalation' },
+                        { name: 'Tel Aviv', lat: 32.07, lon: 34.78, level: 'high', desc: 'Tel Aviv — Israel-Gaza conflict, active military operations' },
+                        { name: 'London', lat: 51.5, lon: -0.12, level: 'low', desc: 'London — Financial center, Five Eyes, NATO ally' },
+                        { name: 'Brussels', lat: 50.85, lon: 4.35, level: 'low', desc: 'Brussels — EU/NATO headquarters, European policy' },
+                        { name: 'Pyongyang', lat: 39.03, lon: 125.75, level: 'elevated', desc: 'Pyongyang — North Korea nuclear threat, missile tests' },
+                        { name: 'Riyadh', lat: 24.7, lon: 46.7, level: 'elevated', desc: 'Riyadh — Saudi oil, OPEC+, Yemen conflict, regional power' },
+                        { name: 'Delhi', lat: 28.6, lon: 77.2, level: 'low', desc: 'Delhi — India rising power, China border tensions' },
+                        { name: 'Singapore', lat: 1.35, lon: 103.82, level: 'low', desc: 'Singapore — Shipping chokepoint, Asian finance hub' },
+                        { name: 'Tokyo', lat: 35.68, lon: 139.76, level: 'low', desc: 'Tokyo — US ally, regional security, economic power' }
                     ];
 
                     try {
@@ -157,21 +164,22 @@
                         // Draw hotspots
                         hotspots.forEach(h => {
                             const [x, y] = projection([h.lon, h.lat]);
+                            const color = threatColors[h.level] || threatColors.low;
                             if (x && y) {
                                 // Outer pulsing ring
                                 svg.append('circle')
                                     .attr('cx', x).attr('cy', y).attr('r', 6)
-                                    .attr('fill', 'none').attr('stroke', '#00ff88')
+                                    .attr('fill', 'none').attr('stroke', color)
                                     .attr('stroke-width', 1.5).attr('opacity', 0.6)
                                     .attr('class', 'hotspot-pulse');
                                 // Inner solid circle
                                 svg.append('circle')
                                     .attr('cx', x).attr('cy', y).attr('r', 3)
-                                    .attr('fill', '#00ff88').attr('opacity', 0.9);
+                                    .attr('fill', color).attr('opacity', 0.9);
                                 // Label
                                 svg.append('text')
                                     .attr('x', x + 8).attr('y', y + 3)
-                                    .attr('fill', '#00ff88').attr('font-size', '8px')
+                                    .attr('fill', color).attr('font-size', '8px')
                                     .attr('font-family', 'monospace')
                                     .text(h.name);
                                 // Invisible hit area for tooltip
@@ -181,7 +189,8 @@
                                     .attr('class', 'hotspot-hit')
                                     .on('mouseenter', function(event) {
                                         const rect = mapPanel.getBoundingClientRect();
-                                        tooltip.innerHTML = h.desc;
+                                        const levelLabel = h.level.charAt(0).toUpperCase() + h.level.slice(1);
+                                        tooltip.innerHTML = `<strong style="color:${color}">[${levelLabel}]</strong> ${h.desc}`;
                                         tooltip.style.display = 'block';
                                         tooltip.style.left = (event.clientX - rect.left + 15) + 'px';
                                         tooltip.style.top = (event.clientY - rect.top - 10) + 'px';
