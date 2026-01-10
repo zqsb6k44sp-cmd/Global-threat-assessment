@@ -8,14 +8,20 @@ export async function fetchWithProxy(url) {
     return serviceClient.fetchWithProxy(url);
 }
 
-// Fetch RSS feed using rss2json API as primary method - now with caching
+// Worker URL for RSS parsing
+const WORKER_URL = 'https://situation-monitor-proxy.seanthielen-e.workers.dev';
+
+// Fetch RSS feed using Cloudflare Worker with built-in RSS-to-JSON parsing
 export async function fetchFeedViaJson(source) {
     try {
-        const result = await serviceClient.request('RSS2JSON', '/v1/api.json', {
-            params: { rss_url: source.url }
-        });
+        const proxyUrl = `${WORKER_URL}/?url=${encodeURIComponent(source.url)}&format=json`;
+        const response = await fetch(proxyUrl);
 
-        const data = result.data;
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
         if (data.status !== 'ok' || !data.items) return [];
 
         return data.items.slice(0, 5).map(item => ({
@@ -24,10 +30,10 @@ export async function fetchFeedViaJson(source) {
             link: item.link || '',
             pubDate: item.pubDate || '',
             isAlert: hasAlertKeyword(item.title || ''),
-            _cached: result.fromCache || false
+            _cached: response.headers.get('X-Cache') === 'HIT'
         }));
     } catch (e) {
-        console.log(`rss2json failed for ${source.name}, trying XML proxy...`);
+        console.log(`Worker failed for ${source.name}, trying XML fallback...`);
         return null; // Signal to try XML fallback
     }
 }
@@ -38,9 +44,9 @@ export function hasAlertKeyword(title) {
     return ALERT_KEYWORDS.some(kw => lower.includes(kw));
 }
 
-// Parse RSS feed - tries rss2json API first, then falls back to XML proxy
+// Parse RSS feed - tries Cloudflare Worker JSON first, then falls back to XML
 export async function fetchFeed(source) {
-    // Try rss2json API first (more reliable)
+    // Try Worker RSS-to-JSON first
     const jsonResult = await fetchFeedViaJson(source);
     if (jsonResult !== null && jsonResult.length > 0) {
         return jsonResult;
@@ -274,11 +280,13 @@ export async function fetchCongressTrades() {
     // Note: The House Stock Watcher S3 bucket is no longer publicly accessible.
     // This now fetches congressional trading-related news instead.
     try {
-        const result = await serviceClient.request('RSS2JSON', '/v1/api.json', {
-            params: { rss_url: 'https://news.google.com/rss/search?q=congress+stock+trading+disclosure&hl=en-US&gl=US&ceid=US:en' }
-        });
+        const feedUrl = 'https://news.google.com/rss/search?q=congress+stock+trading+disclosure&hl=en-US&gl=US&ceid=US:en';
+        const proxyUrl = `${WORKER_URL}/?url=${encodeURIComponent(feedUrl)}&format=json`;
+        const response = await fetch(proxyUrl);
 
-        const data = result.data;
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
         if (data.status === 'ok' && data.items) {
             return data.items.slice(0, 10).map(item => ({
                 name: item.title.substring(0, 50) + (item.title.length > 50 ? '...' : ''),
@@ -320,16 +328,17 @@ export async function fetchGovContracts() {
     }
 }
 
-// Fetch AI news from major AI companies - now with ServiceClient
+// Fetch AI news from major AI companies - using Cloudflare Worker
 export async function fetchAINews() {
     const results = await Promise.all(AI_FEEDS.map(async (source) => {
-        // Try rss2json API first with ServiceClient
+        // Use Cloudflare Worker with RSS-to-JSON parsing
         try {
-            const result = await serviceClient.request('RSS2JSON', '/v1/api.json', {
-                params: { rss_url: source.url }
-            });
+            const proxyUrl = `${WORKER_URL}/?url=${encodeURIComponent(source.url)}&format=json`;
+            const response = await fetch(proxyUrl);
 
-            const data = result.data;
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
             if (data.status === 'ok' && data.items) {
                 return data.items.slice(0, 3).map(item => ({
                     source: source.name,
@@ -338,32 +347,6 @@ export async function fetchAINews() {
                     date: item.pubDate || ''
                 }));
             }
-        } catch (e) {
-            // Fall through to XML proxy
-        }
-
-        // Fallback to XML proxy
-        try {
-            const text = await fetchWithProxy(source.url);
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(text, 'text/xml');
-
-            let items = xml.querySelectorAll('item');
-            if (items.length === 0) items = xml.querySelectorAll('entry');
-
-            return Array.from(items).slice(0, 3).map(item => {
-                let link = '';
-                const linkEl = item.querySelector('link');
-                if (linkEl) link = linkEl.getAttribute('href') || linkEl.textContent || '';
-
-                return {
-                    source: source.name,
-                    title: item.querySelector('title')?.textContent?.trim() || 'No title',
-                    link: link.trim(),
-                    date: item.querySelector('pubDate')?.textContent ||
-                          item.querySelector('published')?.textContent || ''
-                };
-            });
         } catch (e) {
             console.log(`Failed to fetch ${source.name}`);
             return [];
