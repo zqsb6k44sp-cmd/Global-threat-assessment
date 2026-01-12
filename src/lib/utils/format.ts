@@ -65,6 +65,9 @@ export function formatNumber(value: number, decimals = 2): string {
  * Format percent change with sign
  */
 export function formatPercentChange(value: number, decimals = 2): string {
+	if (isNaN(value) || !isFinite(value)) {
+		return '--';
+	}
 	const sign = value > 0 ? '+' : '';
 	return sign + value.toFixed(decimals) + '%';
 }
