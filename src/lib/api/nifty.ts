@@ -52,14 +52,34 @@ async function fetchFinnhubQuote(symbol: string): Promise<FinnhubQuote | null> {
 
 /**
  * Generate logo URL for Indian stock
- * Using a reliable source for company logos
+ * Using clearbit logo API (free, no auth required)
  */
 function getLogoUrl(symbol: string): string {
 	// Remove .NS suffix for the logo lookup
 	const cleanSymbol = symbol.replace('.NS', '');
-	// Using Logo.dev API which provides company logos
-	// Fallback to a placeholder if not available
-	return `https://img.logo.dev/ticker/${cleanSymbol}?token=pk_X-FzGBTdQcGv-F2VdOZLbw&format=png&size=60`;
+	// Try to map symbol to common domain names for better logo resolution
+	const domainMap: Record<string, string> = {
+		RELIANCE: 'ril.com',
+		TCS: 'tcs.com',
+		HDFCBANK: 'hdfcbank.com',
+		INFY: 'infosys.com',
+		ICICIBANK: 'icicibank.com',
+		HINDUNILVR: 'hul.co.in',
+		ITC: 'itcportal.com',
+		SBIN: 'sbi.co.in',
+		BHARTIARTL: 'airtel.in',
+		WIPRO: 'wipro.com'
+	};
+
+	const domain = domainMap[cleanSymbol];
+	if (domain) {
+		// Use Clearbit Logo API for known domains
+		return `https://logo.clearbit.com/${domain}`;
+	}
+
+	// Fallback to a generic placeholder with first letter
+	const firstLetter = cleanSymbol.charAt(0);
+	return `https://ui-avatars.com/api/?name=${firstLetter}&size=60&background=random`;
 }
 
 /**
