@@ -1,22 +1,12 @@
 <script lang="ts">
 	import { Panel } from '$lib/components/common';
 	import { bloomberg } from '$lib/stores';
+	import { formatTimeSince } from '$lib/utils';
 
 	const items = $derived($bloomberg.items);
 	const loading = $derived($bloomberg.loading);
-	const error = $bloomberg.error;
+	const error = $derived($bloomberg.error);
 	const lastUpdated = $derived($bloomberg.lastUpdated);
-
-	// Format time since last update
-	function formatTimeSince(timestamp: number | null): string {
-		if (!timestamp) return 'Never';
-		const seconds = Math.floor((Date.now() - timestamp) / 1000);
-		if (seconds < 60) return `${seconds}s ago`;
-		const minutes = Math.floor(seconds / 60);
-		if (minutes < 60) return `${minutes}m ago`;
-		const hours = Math.floor(minutes / 60);
-		return `${hours}h ago`;
-	}
 
 	const lastUpdateText = $derived(formatTimeSince(lastUpdated));
 

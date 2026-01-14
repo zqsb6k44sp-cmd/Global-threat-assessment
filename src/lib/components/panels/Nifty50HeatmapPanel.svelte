@@ -1,22 +1,12 @@
 <script lang="ts">
 	import { Panel, StockHeatmapCell } from '$lib/components/common';
 	import { nifty50 } from '$lib/stores';
+	import { formatTimeSince } from '$lib/utils';
 
 	const items = $derived($nifty50.items);
 	const loading = $derived($nifty50.loading);
 	const error = $derived($nifty50.error);
 	const lastUpdated = $derived($nifty50.lastUpdated);
-
-	// Format time since last update
-	function formatTimeSince(timestamp: number | null): string {
-		if (!timestamp) return 'Never';
-		const seconds = Math.floor((Date.now() - timestamp) / 1000);
-		if (seconds < 60) return `${seconds}s ago`;
-		const minutes = Math.floor(seconds / 60);
-		if (minutes < 60) return `${minutes}m ago`;
-		const hours = Math.floor(minutes / 60);
-		return `${hours}h ago`;
-	}
 
 	const lastUpdateText = $derived(formatTimeSince(lastUpdated));
 </script>

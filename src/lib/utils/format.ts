@@ -33,6 +33,19 @@ export function getRelativeTime(dateInput: string | number | Date): string {
 }
 
 /**
+ * Format time since last update (for panel headers)
+ */
+export function formatTimeSince(timestamp: number | null): string {
+	if (!timestamp) return 'Never';
+	const seconds = Math.floor((Date.now() - timestamp) / 1000);
+	if (seconds < 60) return `${seconds}s ago`;
+	const minutes = Math.floor(seconds / 60);
+	if (minutes < 60) return `${minutes}m ago`;
+	const hours = Math.floor(minutes / 60);
+	return `${hours}h ago`;
+}
+
+/**
  * Format currency value
  */
 export function formatCurrency(
