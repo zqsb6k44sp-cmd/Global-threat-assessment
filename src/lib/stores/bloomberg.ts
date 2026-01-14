@@ -1,22 +1,22 @@
 /**
- * Nifty stores - Nifty 50 and Nifty Next 50
+ * Bloomberg feed store - Financial news aggregation
  */
 
-import { writable, derived } from 'svelte/store';
+import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
-import type { NiftyStock } from '$lib/types';
+import type { BloombergFeedItem } from '$lib/types';
 
-export interface NiftyState {
-	items: NiftyStock[];
+export interface BloombergState {
+	items: BloombergFeedItem[];
 	loading: boolean;
 	error: string | null;
 	lastUpdated: number | null;
 }
 
-const NIFTY_AUTO_REFRESH_INTERVAL = 60 * 1000; // 60 seconds
+const BLOOMBERG_AUTO_REFRESH_INTERVAL = 2 * 60 * 1000; // 2 minutes
 
 // Create initial state
-function createInitialState(): NiftyState {
+function createInitialState(): BloombergState {
 	return {
 		items: [],
 		loading: false,
@@ -25,9 +25,9 @@ function createInitialState(): NiftyState {
 	};
 }
 
-// Create a Nifty store factory
-function createNiftyStore() {
-	const { subscribe, set, update } = writable<NiftyState>(createInitialState());
+// Create Bloomberg store
+function createBloombergStore() {
+	const { subscribe, set, update } = writable<BloombergState>(createInitialState());
 
 	let autoRefreshTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -59,7 +59,7 @@ function createNiftyStore() {
 		/**
 		 * Set items
 		 */
-		setItems(items: NiftyStock[]) {
+		setItems(items: BloombergFeedItem[]) {
 			update((state) => ({
 				...state,
 				items,
@@ -87,7 +87,7 @@ function createNiftyStore() {
 			if (browser) {
 				autoRefreshTimer = setInterval(() => {
 					void callback();
-				}, NIFTY_AUTO_REFRESH_INTERVAL);
+				}, BLOOMBERG_AUTO_REFRESH_INTERVAL);
 			}
 		},
 
@@ -103,12 +103,5 @@ function createNiftyStore() {
 	};
 }
 
-// Export Nifty 50 store
-export const nifty50 = createNiftyStore();
-
-// Export Nifty Next 50 store
-export const niftyNext50 = createNiftyStore();
-
-// Derived stores for convenience
-export const isNifty50Loading = derived(nifty50, ($nifty50) => $nifty50.loading);
-export const isNiftyNext50Loading = derived(niftyNext50, ($niftyNext50) => $niftyNext50.loading);
+// Export Bloomberg store
+export const bloomberg = createBloombergStore();

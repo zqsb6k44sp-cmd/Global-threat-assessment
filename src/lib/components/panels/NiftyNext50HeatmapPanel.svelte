@@ -1,13 +1,17 @@
 <script lang="ts">
 	import { Panel, StockHeatmapCell } from '$lib/components/common';
 	import { niftyNext50 } from '$lib/stores';
+	import { formatTimeSince } from '$lib/utils';
 
 	const items = $derived($niftyNext50.items);
 	const loading = $derived($niftyNext50.loading);
 	const error = $derived($niftyNext50.error);
+	const lastUpdated = $derived($niftyNext50.lastUpdated);
+
+	const lastUpdateText = $derived(formatTimeSince(lastUpdated));
 </script>
 
-<Panel id="niftynext50" title="Nifty Next 50 Heatmap" {loading} {error}>
+<Panel id="niftynext50" title="Nifty Next 50 Heatmap" {loading} {error} status={lastUpdateText}>
 	{#if items.length === 0 && !loading && !error}
 		<div class="empty-state">No Nifty Next 50 data available</div>
 	{:else}

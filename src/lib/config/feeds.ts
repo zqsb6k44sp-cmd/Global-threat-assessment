@@ -2,7 +2,7 @@
  * RSS feed and news source configuration
  */
 
-import type { NewsCategory } from '$lib/types';
+import type { FeedCategory } from '$lib/types';
 
 export interface FeedSource {
 	name: string;
@@ -15,7 +15,7 @@ export interface IntelSource extends FeedSource {
 	region?: string;
 }
 
-export const FEEDS: Record<NewsCategory, FeedSource[]> = {
+export const FEEDS: Record<FeedCategory, FeedSource[]> = {
 	politics: [
 		{ name: 'BBC World', url: 'https://feeds.bbci.co.uk/news/world/rss.xml' },
 		{ name: 'NPR News', url: 'https://feeds.npr.org/1001/rss.xml' },
@@ -53,6 +53,17 @@ export const FEEDS: Record<NewsCategory, FeedSource[]> = {
 	intel: [
 		{ name: 'CSIS', url: 'https://www.csis.org/analysis/feed' },
 		{ name: 'Brookings', url: 'https://www.brookings.edu/feed/' }
+	],
+	bloomberg: [
+		{
+			name: 'Reuters Business',
+			url: 'https://www.reutersagency.com/feed/?taxonomy=best-topics&post_type=best'
+		},
+		{ name: 'CNBC', url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html' },
+		{ name: 'MarketWatch', url: 'https://feeds.marketwatch.com/marketwatch/topstories' },
+		{ name: 'FT', url: 'https://www.ft.com/rss/home' },
+		{ name: 'WSJ Markets', url: 'https://feeds.a.dj.com/rss/RSSMarketsMain.xml' },
+		{ name: 'Investing.com', url: 'https://www.investing.com/rss/news.rss' }
 	]
 };
 

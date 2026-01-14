@@ -62,7 +62,8 @@ export async function fetchWithProxy(url: string): Promise<Response> {
  */
 export const API_DELAYS = {
 	betweenCategories: 500,
-	betweenRetries: 1000
+	betweenRetries: 1000,
+	BETWEEN_FEEDS: 500 // For Bloomberg feed fetching
 } as const;
 
 /**

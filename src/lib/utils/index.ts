@@ -5,6 +5,7 @@
 export {
 	timeAgo,
 	getRelativeTime,
+	formatTimeSince,
 	formatCurrency,
 	formatNumber,
 	formatPercentChange,

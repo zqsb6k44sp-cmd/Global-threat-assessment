@@ -1,9 +1,14 @@
 // Core data types for Situation Monitor
 
 /**
- * News feed category
+ * News feed category (for GDELT/RSS)
  */
 export type NewsCategory = 'politics' | 'tech' | 'finance' | 'gov' | 'ai' | 'intel';
+
+/**
+ * All feed categories including specialized feeds
+ */
+export type FeedCategory = NewsCategory | 'bloomberg';
 
 /**
  * A news item from any source (RSS, GDELT, etc.)
@@ -22,6 +27,19 @@ export interface NewsItem {
 	alertKeyword?: string;
 	region?: string;
 	topics?: string[];
+}
+
+/**
+ * Bloomberg-style feed item
+ */
+export interface BloombergFeedItem {
+	id: string;
+	title: string;
+	link: string;
+	pubDate?: string;
+	timestamp: number;
+	description?: string;
+	source: string;
 }
 
 /**

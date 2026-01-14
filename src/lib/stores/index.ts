@@ -76,3 +76,6 @@ export {
 	isNiftyNext50Loading,
 	type NiftyState
 } from './nifty';
+
+// Bloomberg store
+export { bloomberg, type BloombergState } from './bloomberg';
