@@ -55,7 +55,10 @@ export const FEEDS: Record<FeedCategory, FeedSource[]> = {
 		{ name: 'Brookings', url: 'https://www.brookings.edu/feed/' }
 	],
 	bloomberg: [
-		{ name: 'Reuters Business', url: 'https://www.reutersagency.com/feed/?taxonomy=best-topics&post_type=best' },
+		{
+			name: 'Reuters Business',
+			url: 'https://www.reutersagency.com/feed/?taxonomy=best-topics&post_type=best'
+		},
 		{ name: 'CNBC', url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html' },
 		{ name: 'MarketWatch', url: 'https://feeds.marketwatch.com/marketwatch/topstories' },
 		{ name: 'FT', url: 'https://www.ft.com/rss/home' },

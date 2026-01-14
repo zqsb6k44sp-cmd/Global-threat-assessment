@@ -36,7 +36,14 @@
 	}
 </script>
 
-<Panel id="bloomberg" title="Bloomberg Live Feed" count={items.length} {loading} {error} status={lastUpdateText}>
+<Panel
+	id="bloomberg"
+	title="Bloomberg Live Feed"
+	count={items.length}
+	{loading}
+	{error}
+	status={lastUpdateText}
+>
 	{#if items.length === 0 && !loading && !error}
 		<div class="empty-state">No Bloomberg feed data available</div>
 	{:else}

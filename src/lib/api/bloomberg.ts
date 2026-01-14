@@ -27,6 +27,20 @@ function delay(ms: number): Promise<void> {
 }
 
 /**
+ * RSS Feed Item interface
+ */
+interface RSSFeedItem {
+	title?: string;
+	link?: string;
+	guid?: string;
+	pubDate?: string;
+	isoDate?: string;
+	published?: string;
+	contentSnippet?: string;
+	description?: string;
+}
+
+/**
  * Parse an RSS feed using the proxy
  */
 async function parseFeed(feedUrl: string, sourceName: string): Promise<BloombergFeedItem[]> {
@@ -44,7 +58,7 @@ async function parseFeed(feedUrl: string, sourceName: string): Promise<Bloomberg
 			return [];
 		}
 
-		return data.items.slice(0, 5).map((item: any) => {
+		return data.items.slice(0, 5).map((item: RSSFeedItem) => {
 			const id = hashCode(item.link || item.guid || item.title + sourceName);
 			const pubDate = item.pubDate || item.isoDate || item.published || new Date().toISOString();
 			const timestamp = new Date(pubDate).getTime();
@@ -88,9 +102,7 @@ export async function fetchBloombergFeed(): Promise<BloombergFeedItem[]> {
 		}
 
 		// Sort by timestamp (most recent first) and take top 15
-		const sortedItems = allItems
-			.sort((a, b) => b.timestamp - a.timestamp)
-			.slice(0, 15);
+		const sortedItems = allItems.sort((a, b) => b.timestamp - a.timestamp).slice(0, 15);
 
 		logger.log('Bloomberg API', `Fetched ${sortedItems.length} Bloomberg feed items`);
 		return sortedItems;
