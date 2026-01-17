@@ -354,3 +354,7 @@ export interface WorldLeader {
 	focus?: string[];
 	news?: LeaderNews[];
 }
+
+// Re-export shipping and fishing types
+export type { ShippingRoute, ShippingVessel, VesselPosition } from './shipping';
+export type { FishingVessel, FishingZone } from './fishing';

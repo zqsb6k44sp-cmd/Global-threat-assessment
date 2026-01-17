@@ -11,10 +11,13 @@
 		OCEANS,
 		SANCTIONED_COUNTRY_IDS,
 		THREAT_COLORS,
-		WEATHER_CODES
+		WEATHER_CODES,
+		SHIPPING_ROUTES
 	} from '$lib/config/map';
 	import { CACHE_TTLS } from '$lib/config/api';
 	import type { CustomMonitor } from '$lib/types';
+	import { fetchShippingVessels } from '$lib/services/shipping';
+	import type { ShippingVessel } from '$lib/types/shipping';
 
 	interface Props {
 		monitors?: CustomMonitor[];
@@ -38,6 +41,11 @@
 
 	const WIDTH = 800;
 	const HEIGHT = 400;
+
+	// Shipping traffic state
+	let showShipping = $state(false);
+	let shippingVessels = $state<ShippingVessel[]>([]);
+	let loadingShipping = $state(false);
 
 	// Tooltip state
 	let tooltipContent = $state<{
@@ -542,6 +550,109 @@
 			});
 	}
 
+	// Load shipping data
+	async function loadShippingData(): Promise<void> {
+		if (loadingShipping) return;
+		loadingShipping = true;
+		try {
+			shippingVessels = await fetchShippingVessels();
+			if (showShipping && mapGroup && projection) {
+				drawShippingTraffic();
+			}
+		} catch (err) {
+			console.error('Failed to load shipping data:', err);
+		} finally {
+			loadingShipping = false;
+		}
+	}
+
+	// Draw shipping routes and vessels
+	function drawShippingTraffic(): void {
+		if (!mapGroup || !projection || !d3Module) return;
+
+		// Remove existing shipping elements
+		mapGroup.selectAll('.shipping-route').remove();
+		mapGroup.selectAll('.shipping-vessel').remove();
+
+		if (!showShipping) return;
+
+		// Draw shipping routes with dotted lines
+		SHIPPING_ROUTES.forEach((route) => {
+			const lineGenerator = d3Module
+				.line<[number, number]>()
+				.x((d) => projection(d)?.[0] || 0)
+				.y((d) => projection(d)?.[1] || 0);
+
+			mapGroup
+				.append('path')
+				.attr('class', 'shipping-route')
+				.attr('d', lineGenerator(route.coordinates))
+				.attr('fill', 'none')
+				.attr('stroke', '#87CEEB')
+				.attr('stroke-width', 1.5)
+				.attr('stroke-dasharray', '5,5')
+				.attr('opacity', 0.6)
+				.on('mouseenter', (event: MouseEvent) =>
+					showTooltip(event, `🚢 ${route.name}`, '#87CEEB', [`Type: ${route.type}`])
+				)
+				.on('mousemove', moveTooltip)
+				.on('mouseleave', hideTooltip);
+		});
+
+		// Draw vessel markers
+		shippingVessels.forEach((vessel) => {
+			const [x, y] = projection([vessel.lon, vessel.lat]) || [0, 0];
+			if (x && y) {
+				// Vessel marker (small ship icon represented as triangle)
+				const size = 6;
+				const angle = vessel.course || 0;
+				const shipPath = `M${x},${y - size} L${x + size / 2},${y + size} L${x - size / 2},${y + size} Z`;
+
+				mapGroup
+					.append('path')
+					.attr('class', 'shipping-vessel')
+					.attr('d', shipPath)
+					.attr('fill', '#87CEEB')
+					.attr('stroke', '#4682B4')
+					.attr('stroke-width', 0.5)
+					.attr('transform', `rotate(${angle}, ${x}, ${y})`)
+					.attr('opacity', 0.9);
+
+				// Hit area for tooltip
+				mapGroup
+					.append('circle')
+					.attr('class', 'shipping-vessel')
+					.attr('cx', x)
+					.attr('cy', y)
+					.attr('r', 8)
+					.attr('fill', 'transparent')
+					.attr('cursor', 'pointer')
+					.on('mouseenter', (event: MouseEvent) => {
+						const lines = [
+							`Type: ${vessel.type}`,
+							`Speed: ${vessel.speed} knots`,
+							`Course: ${vessel.course}°`,
+							vessel.destination ? `Destination: ${vessel.destination}` : '',
+							vessel.flag ? `Flag: ${vessel.flag}` : ''
+						].filter(Boolean);
+						showTooltip(event, `⚓ ${vessel.name}`, '#87CEEB', lines);
+					})
+					.on('mousemove', moveTooltip)
+					.on('mouseleave', hideTooltip);
+			}
+		});
+	}
+
+	// Toggle shipping traffic display
+	async function toggleShipping(): Promise<void> {
+		showShipping = !showShipping;
+		if (showShipping && shippingVessels.length === 0) {
+			await loadShippingData();
+		} else {
+			drawShippingTraffic();
+		}
+	}
+
 	// Zoom controls
 	function zoomIn(): void {
 		if (!svg || !zoom) return;
@@ -570,6 +681,15 @@
 		}
 	});
 
+	// Reactively update shipping when state changes
+	$effect(() => {
+		// Track shipping state - reference it to trigger reactivity
+		if (showShipping !== undefined && mapGroup && projection) {
+			// drawShippingTraffic already handles conditional display
+			drawShippingTraffic();
+		}
+	});
+
 	onMount(() => {
 		initMap();
 	});
@@ -593,6 +713,18 @@
 			<button class="zoom-btn" onclick={zoomIn} title="Zoom in">+</button>
 			<button class="zoom-btn" onclick={zoomOut} title="Zoom out">−</button>
 			<button class="zoom-btn" onclick={resetZoom} title="Reset">⟲</button>
+		</div>
+		<div class="map-controls">
+			<label class="control-toggle" for="shipping-toggle">
+				<input
+					type="checkbox"
+					id="shipping-toggle"
+					bind:checked={showShipping}
+					onchange={toggleShipping}
+					aria-label="Toggle shipping traffic overlay"
+				/>
+				<span>🚢 Shipping</span>
+			</label>
 		</div>
 		<div class="map-legend">
 			<div class="legend-item">
@@ -666,6 +798,41 @@
 	.zoom-btn:hover {
 		background: rgba(40, 40, 40, 0.9);
 		color: #fff;
+	}
+
+	.map-controls {
+		position: absolute;
+		top: 0.5rem;
+		left: 0.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		background: rgba(10, 10, 10, 0.8);
+		padding: 0.5rem;
+		border-radius: 4px;
+	}
+
+	.control-toggle {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.75rem;
+		color: #aaa;
+		cursor: pointer;
+		user-select: none;
+	}
+
+	.control-toggle:hover {
+		color: #fff;
+	}
+
+	.control-toggle input[type='checkbox'] {
+		cursor: pointer;
+		accent-color: #87ceeb;
+	}
+
+	.control-toggle span {
+		white-space: nowrap;
 	}
 
 	.map-legend {

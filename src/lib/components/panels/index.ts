@@ -16,6 +16,7 @@ export { default as CorrelationPanel } from './CorrelationPanel.svelte';
 export { default as NarrativePanel } from './NarrativePanel.svelte';
 export { default as MonitorsPanel } from './MonitorsPanel.svelte';
 export { default as MapPanel } from './MapPanel.svelte';
+export { default as FishingMapPanel } from './FishingMapPanel.svelte';
 export { default as WorldLeadersPanel } from './WorldLeadersPanel.svelte';
 export { default as Nifty50HeatmapPanel } from './Nifty50HeatmapPanel.svelte';
 export { default as NiftyNext50HeatmapPanel } from './NiftyNext50HeatmapPanel.svelte';

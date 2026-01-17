@@ -13,6 +13,7 @@
 		NarrativePanel,
 		MonitorsPanel,
 		MapPanel,
+		FishingMapPanel,
 		WhalePanel,
 		PolymarketPanel,
 		ContractsPanel,
@@ -224,9 +225,9 @@
 
 	// Initial load
 	onMount(() => {
-		// Check if first visit
+		// Auto-apply "everything" preset on first visit (skip onboarding modal)
 		if (!settings.isOnboardingComplete()) {
-			onboardingOpen = true;
+			settings.applyPreset('everything');
 		}
 
 		// Load initial data and track as refresh
@@ -314,6 +315,13 @@
 			{#if isPanelVisible('map')}
 				<div class="panel-slot map-slot">
 					<MapPanel monitors={$monitors.monitors} />
+				</div>
+			{/if}
+
+			<!-- Fishing Map Panel - Full width -->
+			{#if isPanelVisible('fishing')}
+				<div class="panel-slot map-slot">
+					<FishingMapPanel />
 				</div>
 			{/if}
 

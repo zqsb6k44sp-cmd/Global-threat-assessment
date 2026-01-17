@@ -389,3 +389,103 @@ export const WEATHER_CODES: Record<number, string> = {
 	96: '⛈️ Thunderstorm',
 	99: '⛈️ Thunderstorm'
 };
+
+/**
+ * Major shipping routes
+ */
+export interface ShippingRouteConfig {
+	id: string;
+	name: string;
+	coordinates: [number, number][];
+	type: 'container' | 'tanker' | 'bulk' | 'general';
+}
+
+export const SHIPPING_ROUTES: ShippingRouteConfig[] = [
+	// Suez Canal Route (Asia-Europe)
+	{
+		id: 'suez-asia-europe',
+		name: 'Asia-Europe (Suez)',
+		coordinates: [
+			[103.8, 1.3], // Singapore
+			[80, 7], // Sri Lanka
+			[60, 20], // Arabian Sea
+			[32.5, 30.0], // Suez
+			[20, 35], // Mediterranean
+			[0, 40], // Gibraltar
+			[-5, 45], // Atlantic
+			[-2, 50] // North Europe
+		],
+		type: 'container'
+	},
+	// Trans-Pacific Route
+	{
+		id: 'transpacific',
+		name: 'Trans-Pacific',
+		coordinates: [
+			[120, 30], // East China
+			[140, 35], // Japan
+			[180, 40], // Mid-Pacific
+			[-160, 35], // North Pacific
+			[-125, 35], // California
+			[-118, 33] // Los Angeles
+		],
+		type: 'container'
+	},
+	// Panama Canal Route
+	{
+		id: 'panama',
+		name: 'Panama Route',
+		coordinates: [
+			[-118, 33], // Los Angeles
+			[-100, 20], // Mexico
+			[-79.7, 9.1], // Panama Canal
+			[-70, 5], // South America
+			[-40, -10], // Brazil
+			[-30, 0] // Atlantic
+		],
+		type: 'container'
+	},
+	// Persian Gulf Oil Route
+	{
+		id: 'persian-gulf-oil',
+		name: 'Persian Gulf Oil',
+		coordinates: [
+			[50, 26], // Persian Gulf
+			[56.5, 26.5], // Hormuz Strait
+			[65, 20], // Arabian Sea
+			[80, 10], // Indian Ocean
+			[100, 5], // Malacca approach
+			[101.0, 2.5], // Malacca Strait
+			[110, 5] // South China Sea
+		],
+		type: 'tanker'
+	},
+	// Northern Sea Route (Arctic)
+	{
+		id: 'northern-sea-route',
+		name: 'Northern Sea Route',
+		coordinates: [
+			[30, 70], // Barents Sea
+			[60, 75], // Kara Sea
+			[90, 76], // Laptev Sea
+			[140, 72], // East Siberian Sea
+			[170, 67] // Bering Strait
+		],
+		type: 'bulk'
+	},
+	// Cape of Good Hope Route
+	{
+		id: 'cape-good-hope',
+		name: 'Cape of Good Hope',
+		coordinates: [
+			[103.8, 1.3], // Singapore
+			[80, -10], // Indian Ocean
+			[50, -25], // Mozambique
+			[18, -34], // Cape Town
+			[0, -30], // Atlantic
+			[-20, 0], // West Africa
+			[-10, 35] // Europe
+		],
+		type: 'bulk'
+	}
+];
