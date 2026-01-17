@@ -683,14 +683,10 @@
 
 	// Reactively update shipping when state changes
 	$effect(() => {
-		// Track shipping state
-		const _showShipping = showShipping;
-		if (_showShipping && mapGroup && projection) {
+		// Track shipping state - reference it to trigger reactivity
+		if (showShipping !== undefined && mapGroup && projection) {
+			// drawShippingTraffic already handles conditional display
 			drawShippingTraffic();
-		} else if (!_showShipping && mapGroup) {
-			// Remove shipping elements when toggled off
-			mapGroup.selectAll('.shipping-route').remove();
-			mapGroup.selectAll('.shipping-vessel').remove();
 		}
 	});
 
@@ -719,8 +715,14 @@
 			<button class="zoom-btn" onclick={resetZoom} title="Reset">⟲</button>
 		</div>
 		<div class="map-controls">
-			<label class="control-toggle">
-				<input type="checkbox" bind:checked={showShipping} onchange={toggleShipping} />
+			<label class="control-toggle" for="shipping-toggle">
+				<input
+					type="checkbox"
+					id="shipping-toggle"
+					bind:checked={showShipping}
+					onchange={toggleShipping}
+					aria-label="Toggle shipping traffic overlay"
+				/>
 				<span>🚢 Shipping</span>
 			</label>
 		</div>
