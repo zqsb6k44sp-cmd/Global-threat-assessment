@@ -76,7 +76,6 @@ export const PRESETS: Record<string, Preset> = {
 		description: 'Kitchen sink - all panels enabled',
 		panels: [
 			'map',
-			'fishing',
 			'politics',
 			'tech',
 			'finance',
@@ -102,7 +101,9 @@ export const PRESETS: Record<string, Preset> = {
 			'narrative',
 			'nifty50',
 			'niftynext50',
-			'bloomberg'
+			'bloomberg',
+			'fishing',
+			'globalfishing'
 		]
 	}
 };

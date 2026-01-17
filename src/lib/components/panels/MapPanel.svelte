@@ -683,8 +683,12 @@
 
 	// Reactively update shipping when state changes
 	$effect(() => {
-		// Track shipping state - reference it to trigger reactivity
-		if (showShipping !== undefined && mapGroup && projection) {
+		// Track shipping state and vessels - reference them to trigger reactivity
+		const _showShipping = showShipping;
+		const _vessels = shippingVessels;
+		// Use the references to ensure reactivity tracking
+		void _vessels;
+		if (_showShipping !== undefined && mapGroup && projection) {
 			// drawShippingTraffic already handles conditional display
 			drawShippingTraffic();
 		}

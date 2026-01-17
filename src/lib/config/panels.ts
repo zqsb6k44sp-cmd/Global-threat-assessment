@@ -35,7 +35,8 @@ export type PanelId =
 	| 'narrative'
 	| 'nifty50'
 	| 'niftynext50'
-	| 'fishing';
+	| 'fishing'
+	| 'globalfishing';
 
 export const PANELS: Record<PanelId, PanelConfig> = {
 	map: { name: 'Global Map', priority: 1 },
@@ -65,7 +66,8 @@ export const PANELS: Record<PanelId, PanelConfig> = {
 	narrative: { name: 'Narrative Tracker', priority: 1 },
 	nifty50: { name: 'Nifty 50 Heatmap', priority: 2 },
 	niftynext50: { name: 'Nifty Next 50 Heatmap', priority: 2 },
-	fishing: { name: 'Deep Sea Fishing Traffic', priority: 2 }
+	fishing: { name: 'Deep Sea Fishing Traffic', priority: 2 },
+	globalfishing: { name: 'Global Fishing Watch', priority: 2 }
 };
 
 export const NON_DRAGGABLE_PANELS: PanelId[] = ['map'];

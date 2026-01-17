@@ -14,6 +14,7 @@
 		MonitorsPanel,
 		MapPanel,
 		FishingMapPanel,
+		GlobalFishingWatchPanel,
 		WhalePanel,
 		PolymarketPanel,
 		ContractsPanel,
@@ -318,13 +319,6 @@
 				</div>
 			{/if}
 
-			<!-- Fishing Map Panel - Full width -->
-			{#if isPanelVisible('fishing')}
-				<div class="panel-slot map-slot">
-					<FishingMapPanel />
-				</div>
-			{/if}
-
 			<!-- Bloomberg Feed Panel -->
 			{#if isPanelVisible('bloomberg')}
 				<div class="panel-slot">
@@ -529,6 +523,20 @@
 			{#if isPanelVisible('printer')}
 				<div class="panel-slot">
 					<PrinterPanel />
+				</div>
+			{/if}
+
+			<!-- Fishing Map Panel - Full width -->
+			{#if isPanelVisible('fishing')}
+				<div class="panel-slot map-slot">
+					<FishingMapPanel />
+				</div>
+			{/if}
+
+			<!-- Global Fishing Watch Panel - Full width -->
+			{#if isPanelVisible('globalfishing')}
+				<div class="panel-slot map-slot">
+					<GlobalFishingWatchPanel />
 				</div>
 			{/if}
 
