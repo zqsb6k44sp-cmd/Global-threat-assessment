@@ -15,6 +15,7 @@
 		MapPanel,
 		FishingMapPanel,
 		GlobalFishingWatchPanel,
+		MarineTrafficPanel,
 		WhalePanel,
 		PolymarketPanel,
 		ContractsPanel,
@@ -388,6 +389,20 @@
 				</div>
 			{/if}
 
+			<!-- Fishing Map Panel - Full width -->
+			{#if isPanelVisible('fishing')}
+				<div class="panel-slot map-slot">
+					<FishingMapPanel />
+				</div>
+			{/if}
+
+			<!-- Global Fishing Watch Panel - Full width -->
+			{#if isPanelVisible('globalfishing')}
+				<div class="panel-slot map-slot">
+					<GlobalFishingWatchPanel />
+				</div>
+			{/if}
+
 			{#if isPanelVisible('crypto')}
 				<div class="panel-slot">
 					<CryptoPanel />
@@ -526,17 +541,10 @@
 				</div>
 			{/if}
 
-			<!-- Fishing Map Panel - Full width -->
-			{#if isPanelVisible('fishing')}
+			<!-- Marine Traffic Panel - Full width -->
+			{#if isPanelVisible('marinetraffic')}
 				<div class="panel-slot map-slot">
-					<FishingMapPanel />
-				</div>
-			{/if}
-
-			<!-- Global Fishing Watch Panel - Full width -->
-			{#if isPanelVisible('globalfishing')}
-				<div class="panel-slot map-slot">
-					<GlobalFishingWatchPanel />
+					<MarineTrafficPanel />
 				</div>
 			{/if}
 

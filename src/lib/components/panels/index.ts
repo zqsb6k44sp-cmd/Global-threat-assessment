@@ -18,6 +18,7 @@ export { default as MonitorsPanel } from './MonitorsPanel.svelte';
 export { default as MapPanel } from './MapPanel.svelte';
 export { default as FishingMapPanel } from './FishingMapPanel.svelte';
 export { default as GlobalFishingWatchPanel } from './GlobalFishingWatchPanel.svelte';
+export { default as MarineTrafficPanel } from './MarineTrafficPanel.svelte';
 export { default as WorldLeadersPanel } from './WorldLeadersPanel.svelte';
 export { default as Nifty50HeatmapPanel } from './Nifty50HeatmapPanel.svelte';
 export { default as NiftyNext50HeatmapPanel } from './NiftyNext50HeatmapPanel.svelte';
