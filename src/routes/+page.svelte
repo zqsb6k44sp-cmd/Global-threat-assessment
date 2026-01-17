@@ -13,6 +13,7 @@
 		NarrativePanel,
 		MonitorsPanel,
 		MapPanel,
+		FishingMapPanel,
 		WhalePanel,
 		PolymarketPanel,
 		ContractsPanel,
@@ -314,6 +315,13 @@
 			{#if isPanelVisible('map')}
 				<div class="panel-slot map-slot">
 					<MapPanel monitors={$monitors.monitors} />
+				</div>
+			{/if}
+
+			<!-- Fishing Map Panel - Full width -->
+			{#if isPanelVisible('fishing')}
+				<div class="panel-slot map-slot">
+					<FishingMapPanel />
 				</div>
 			{/if}
 

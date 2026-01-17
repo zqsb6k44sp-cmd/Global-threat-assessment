@@ -216,9 +216,7 @@
 							`Type: ${vessel.fishingType || 'Unknown'}`,
 							`Speed: ${vessel.speed} knots`,
 							`Course: ${vessel.course}°`,
-							vessel.catchData?.species
-								? `Species: ${vessel.catchData.species.join(', ')}`
-								: '',
+							vessel.catchData?.species ? `Species: ${vessel.catchData.species.join(', ')}` : '',
 							vessel.catchData?.zone ? `Zone: ${vessel.catchData.zone}` : ''
 						].filter(Boolean);
 						showTooltip(event, `🐟 ${vessel.name}`, color, lines);

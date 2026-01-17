@@ -578,7 +578,8 @@
 
 		// Draw shipping routes with dotted lines
 		SHIPPING_ROUTES.forEach((route) => {
-			const lineGenerator = d3Module.line<[number, number]>()
+			const lineGenerator = d3Module
+				.line<[number, number]>()
 				.x((d) => projection(d)?.[0] || 0)
 				.y((d) => projection(d)?.[1] || 0);
 
@@ -825,7 +826,7 @@
 
 	.control-toggle input[type='checkbox'] {
 		cursor: pointer;
-		accent-color: #87CEEB;
+		accent-color: #87ceeb;
 	}
 
 	.control-toggle span {
