@@ -72,6 +72,7 @@ export interface SectorPerformance {
 	price: number;
 	change: number;
 	changePercent: number;
+	logoUrl: string;
 }
 
 /**

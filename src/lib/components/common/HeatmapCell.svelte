@@ -26,6 +26,9 @@
 </script>
 
 <div class="heatmap-cell {colorClass}">
+	<div class="logo-container">
+		<img src={sector.logoUrl} alt={sector.name} class="logo" loading="lazy" />
+	</div>
 	<div class="sector-name">{sector.name}</div>
 	{#if showSymbol}
 		<div class="sector-symbol">{sector.symbol}</div>
@@ -44,10 +47,29 @@
 		text-align: center;
 		min-height: 3rem;
 		transition: transform 0.15s ease;
+		gap: 0.2rem;
 	}
 
 	.heatmap-cell:hover {
 		transform: scale(1.02);
+	}
+
+	.logo-container {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		overflow: hidden;
+		background: rgba(255, 255, 255, 0.9);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.logo {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
 	}
 
 	.sector-name {

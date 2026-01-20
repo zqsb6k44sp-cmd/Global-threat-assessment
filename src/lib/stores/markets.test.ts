@@ -45,8 +45,8 @@ describe('Markets Store', () => {
 		const { markets, sectors } = await import('./markets');
 
 		const sectorData = [
-			{ symbol: 'XLK', name: 'Tech', price: 200, change: 2, changePercent: 1.0 },
-			{ symbol: 'XLF', name: 'Finance', price: 40, change: -0.5, changePercent: -1.25 }
+			{ symbol: 'XLK', name: 'Tech', price: 200, change: 2, changePercent: 1.0, logoUrl: 'https://logo.clearbit.com/sectorspdrs.com' },
+			{ symbol: 'XLF', name: 'Finance', price: 40, change: -0.5, changePercent: -1.25, logoUrl: 'https://logo.clearbit.com/sectorspdrs.com' }
 		];
 
 		markets.setSectors(sectorData);

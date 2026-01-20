@@ -48,10 +48,41 @@ function createEmptyMarketItem<T extends 'index' | 'commodity'>(
 }
 
 /**
+ * Generate logo URL for sector ETF
+ * Using Clearbit logo API (free, no auth required)
+ */
+function getSectorLogoUrl(symbol: string): string {
+	// Map sector ETF symbols to their company domains for better logo resolution
+	const domainMap: Record<string, string> = {
+		XLK: 'sectorspdrs.com', // Technology
+		XLF: 'sectorspdrs.com', // Financial
+		XLE: 'sectorspdrs.com', // Energy
+		XLV: 'sectorspdrs.com', // Health Care
+		XLY: 'sectorspdrs.com', // Consumer Discretionary
+		XLP: 'sectorspdrs.com', // Consumer Staples
+		XLI: 'sectorspdrs.com', // Industrial
+		XLB: 'sectorspdrs.com', // Materials
+		XLU: 'sectorspdrs.com', // Utilities
+		XLRE: 'sectorspdrs.com', // Real Estate
+		XLC: 'sectorspdrs.com' // Communication Services
+	};
+
+	const domain = domainMap[symbol];
+	if (domain) {
+		// Use Clearbit Logo API for known domains
+		return `https://logo.clearbit.com/${domain}`;
+	}
+
+	// Fallback to a generic placeholder with first letter
+	const firstLetter = symbol.charAt(0);
+	return `https://ui-avatars.com/api/?name=${firstLetter}&size=60&background=random`;
+}
+
+/**
  * Create an empty sector performance item
  */
 function createEmptySectorItem(symbol: string, name: string): SectorPerformance {
-	return { symbol, name, price: NaN, change: NaN, changePercent: NaN };
+	return { symbol, name, price: NaN, change: NaN, changePercent: NaN, logoUrl: getSectorLogoUrl(symbol) };
 }
 
 // Map index symbols to ETF proxies (free tier doesn't support direct indices)
@@ -192,7 +223,8 @@ export async function fetchSectorPerformance(): Promise<SectorPerformance[]> {
 			name: sector.name,
 			price: quote?.c ?? NaN,
 			change: quote?.d ?? NaN,
-			changePercent: quote?.dp ?? NaN
+			changePercent: quote?.dp ?? NaN,
+			logoUrl: getSectorLogoUrl(sector.symbol)
 		}));
 	} catch (error) {
 		logger.error('Markets API', 'Error fetching sectors:', error);
