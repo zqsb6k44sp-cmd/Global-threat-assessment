@@ -9,11 +9,11 @@
 	let { loading = false, error = null }: Props = $props();
 </script>
 
-<Panel id="conflicttracker" title="CFR Global Conflict Tracker" {loading} {error}>
+<Panel id="conflicttracker" title="War Watch" {loading} {error}>
 	<div class="conflict-tracker-container">
 		<iframe
-			src="https://www.cfr.org/global-conflict-tracker"
-			title="CFR Global Conflict Tracker"
+			src="https://warwatch.ch"
+			title="War Watch"
 			class="conflict-tracker-iframe"
 			sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
 			loading="lazy"

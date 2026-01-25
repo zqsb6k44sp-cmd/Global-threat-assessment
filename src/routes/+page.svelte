@@ -419,7 +419,7 @@
 				</div>
 			{/if}
 
-			<!-- CFR Conflict Tracker Panel - Full width -->
+			<!-- War Watch Panel - Full width -->
 			{#if isPanelVisible('conflicttracker')}
 				<div class="panel-slot map-slot">
 					<ConflictTrackerPanel />
@@ -485,7 +485,7 @@
 	.video-container {
 		position: relative;
 		width: 100%;
-		padding-bottom: 112.5%; /* 2x 16:9 aspect ratio (doubled height) */
+		padding-bottom: 56.25%; /* 16:9 aspect ratio */
 		overflow: hidden;
 	}
 

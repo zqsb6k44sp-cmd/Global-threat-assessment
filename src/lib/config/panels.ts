@@ -64,7 +64,7 @@ export const PANELS: Record<PanelId, PanelConfig> = {
 	fishing: { name: 'Deep Sea Fishing Traffic', priority: 2 },
 	globalfishing: { name: 'Global Fishing Watch', priority: 2 },
 	marinetraffic: { name: 'Marine Traffic', priority: 3 },
-	conflicttracker: { name: 'CFR Conflict Tracker', priority: 2 },
+	conflicttracker: { name: 'War Watch', priority: 2 },
 	defense: { name: 'Defense Stocks', priority: 2 }
 };
 
