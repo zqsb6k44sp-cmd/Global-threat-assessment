@@ -1,54 +1,11 @@
 /**
- * Nifty API - Fetch Nifty 50 and Nifty Next 50 stock data
+ * Nifty API - Fetch Nifty 50 and Nifty Next 50 stock data from Yahoo Finance
  */
 
 import { NIFTY_50, NIFTY_NEXT_50 } from '$lib/config/nifty';
 import type { NiftyStock } from '$lib/types';
-import { logger, FINNHUB_API_KEY, FINNHUB_BASE_URL } from '$lib/config/api';
-
-interface FinnhubQuote {
-	c: number; // Current price
-	d: number; // Change
-	dp: number; // Percent change
-	h: number; // High price of the day
-	l: number; // Low price of the day
-	o: number; // Open price of the day
-	pc: number; // Previous close price
-	t: number; // Timestamp
-}
-
-/**
- * Check if Finnhub API key is configured
- */
-function hasFinnhubApiKey(): boolean {
-	return Boolean(FINNHUB_API_KEY && FINNHUB_API_KEY.length > 0);
-}
-
-/**
- * Fetch a quote from Finnhub
- */
-async function fetchFinnhubQuote(symbol: string): Promise<FinnhubQuote | null> {
-	try {
-		const url = `${FINNHUB_BASE_URL}/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_API_KEY}`;
-		const response = await fetch(url);
-
-		if (!response.ok) {
-			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-		}
-
-		const data: FinnhubQuote = await response.json();
-
-		// Finnhub returns all zeros when symbol not found
-		if (data.c === 0 && data.pc === 0) {
-			return null;
-		}
-
-		return data;
-	} catch (error) {
-		logger.error('Nifty API', `Error fetching quote for ${symbol}:`, error);
-		return null;
-	}
-}
+import { logger } from '$lib/config/api';
+import { fetchYahooQuotes } from './yahoo-finance';
 
 /**
  * Generate logo URL for Indian stock
@@ -96,31 +53,26 @@ function createEmptyNiftyStock(symbol: string, name: string): NiftyStock {
 }
 
 /**
- * Fetch Nifty 50 stocks data
+ * Fetch Nifty 50 stocks data from Yahoo Finance
  */
 export async function fetchNifty50(): Promise<NiftyStock[]> {
-	if (!hasFinnhubApiKey()) {
-		logger.warn('Nifty API', 'Finnhub API key not configured. Add VITE_FINNHUB_API_KEY to .env');
-		return NIFTY_50.map((stock) => createEmptyNiftyStock(stock.symbol, stock.name));
-	}
-
 	try {
-		logger.log('Nifty API', 'Fetching Nifty 50 from Finnhub');
+		logger.log('Nifty API', 'Fetching Nifty 50 from Yahoo Finance');
 
-		const quotes = await Promise.all(
-			NIFTY_50.map(async (stock) => {
-				const quote = await fetchFinnhubQuote(stock.symbol);
-				return { stock, quote };
-			})
-		);
+		const symbols = NIFTY_50.map((s) => s.symbol);
+		const quotesMap = await fetchYahooQuotes(symbols);
 
-		return quotes.map(({ stock, quote }) => ({
-			symbol: stock.symbol,
-			name: stock.name,
-			price: quote?.c ?? NaN,
-			changePercent: quote?.dp ?? NaN,
-			logoUrl: getLogoUrl(stock.symbol)
-		}));
+		return NIFTY_50.map((stock) => {
+			const quote = quotesMap.get(stock.symbol);
+
+			return {
+				symbol: stock.symbol,
+				name: stock.name,
+				price: quote?.regularMarketPrice ?? NaN,
+				changePercent: quote?.regularMarketChangePercent ?? NaN,
+				logoUrl: getLogoUrl(stock.symbol)
+			};
+		});
 	} catch (error) {
 		logger.error('Nifty API', 'Error fetching Nifty 50:', error);
 		return NIFTY_50.map((stock) => createEmptyNiftyStock(stock.symbol, stock.name));
@@ -128,31 +80,26 @@ export async function fetchNifty50(): Promise<NiftyStock[]> {
 }
 
 /**
- * Fetch Nifty Next 50 stocks data
+ * Fetch Nifty Next 50 stocks data from Yahoo Finance
  */
 export async function fetchNiftyNext50(): Promise<NiftyStock[]> {
-	if (!hasFinnhubApiKey()) {
-		logger.warn('Nifty API', 'Finnhub API key not configured. Add VITE_FINNHUB_API_KEY to .env');
-		return NIFTY_NEXT_50.map((stock) => createEmptyNiftyStock(stock.symbol, stock.name));
-	}
-
 	try {
-		logger.log('Nifty API', 'Fetching Nifty Next 50 from Finnhub');
+		logger.log('Nifty API', 'Fetching Nifty Next 50 from Yahoo Finance');
 
-		const quotes = await Promise.all(
-			NIFTY_NEXT_50.map(async (stock) => {
-				const quote = await fetchFinnhubQuote(stock.symbol);
-				return { stock, quote };
-			})
-		);
+		const symbols = NIFTY_NEXT_50.map((s) => s.symbol);
+		const quotesMap = await fetchYahooQuotes(symbols);
 
-		return quotes.map(({ stock, quote }) => ({
-			symbol: stock.symbol,
-			name: stock.name,
-			price: quote?.c ?? NaN,
-			changePercent: quote?.dp ?? NaN,
-			logoUrl: getLogoUrl(stock.symbol)
-		}));
+		return NIFTY_NEXT_50.map((stock) => {
+			const quote = quotesMap.get(stock.symbol);
+
+			return {
+				symbol: stock.symbol,
+				name: stock.name,
+				price: quote?.regularMarketPrice ?? NaN,
+				changePercent: quote?.regularMarketChangePercent ?? NaN,
+				logoUrl: getLogoUrl(stock.symbol)
+			};
+		});
 	} catch (error) {
 		logger.error('Nifty API', 'Error fetching Nifty Next 50:', error);
 		return NIFTY_NEXT_50.map((stock) => createEmptyNiftyStock(stock.symbol, stock.name));

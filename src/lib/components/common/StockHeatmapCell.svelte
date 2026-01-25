@@ -26,12 +26,25 @@
 
 	// Extract symbol without .NS suffix for display
 	const displaySymbol = $derived(stock.symbol.replace('.NS', ''));
+
+	// Format price with appropriate decimals
+	const priceText = $derived(formatPrice(stock.price));
+
+	function formatPrice(price: number): string {
+		if (isNaN(price) || !isFinite(price)) {
+			return '—';
+		}
+		// Use 2 decimals for prices < 100, 0 decimals for >= 100
+		const decimals = price < 100 ? 2 : 0;
+		return '₹' + price.toFixed(decimals);
+	}
 </script>
 
 <div class="stock-cell {colorClass}">
 	<div class="logo-container">
 		<img src={stock.logoUrl} alt={stock.name} class="logo" loading="lazy" />
 	</div>
+	<div class="stock-price">{priceText}</div>
 	<div class="stock-symbol">{displaySymbol}</div>
 	<div class="stock-change">{changeText}</div>
 </div>
@@ -73,6 +86,17 @@
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
+	}
+
+	.stock-price {
+		font-size: 0.6rem;
+		font-weight: 600;
+		color: white;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.stock-symbol {
@@ -131,6 +155,10 @@
 		.logo-container {
 			width: 28px;
 			height: 28px;
+		}
+
+		.stock-price {
+			font-size: 0.55rem;
 		}
 
 		.stock-symbol {

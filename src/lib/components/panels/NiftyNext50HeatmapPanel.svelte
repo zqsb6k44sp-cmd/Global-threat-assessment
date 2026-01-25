@@ -8,6 +8,11 @@
 	const error = $derived($niftyNext50.error);
 	const lastUpdated = $derived($niftyNext50.lastUpdated);
 
+	// Sort stocks by absolute change percentage (most volatile first)
+	const sortedItems = $derived(
+		[...items].sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent))
+	);
+
 	const lastUpdateText = $derived(formatTimeSince(lastUpdated));
 </script>
 
@@ -16,7 +21,7 @@
 		<div class="empty-state">No Nifty Next 50 data available</div>
 	{:else}
 		<div class="heatmap-grid">
-			{#each items as stock (stock.symbol)}
+			{#each sortedItems as stock (stock.symbol)}
 				<StockHeatmapCell {stock} />
 			{/each}
 		</div>

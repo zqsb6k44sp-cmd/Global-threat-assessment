@@ -7,6 +7,13 @@
 	const loading = $derived($defense.loading);
 	const error = $derived($defense.error);
 	const count = $derived(items.length);
+
+	// Handle image load error by replacing with fallback
+	function handleImageError(event: Event, symbol: string) {
+		const img = event.target as HTMLImageElement;
+		if (img.src.includes('ui-avatars.com')) return; // Already using fallback
+		img.src = `https://ui-avatars.com/api/?name=${symbol.charAt(0)}&size=60&background=random&color=fff`;
+	}
 </script>
 
 <Panel id="defense" title="Defense Stocks" {count} {loading} {error}>
@@ -18,7 +25,12 @@
 				{@const changeClass = getChangeClass(stock.changePercent)}
 				<div class="defense-item">
 					<div class="defense-logo">
-						<img src={stock.logoUrl} alt={stock.name} loading="lazy" />
+						<img
+							src={stock.logoUrl}
+							alt={stock.name}
+							loading="lazy"
+							on:error={(e) => handleImageError(e, stock.symbol)}
+						/>
 					</div>
 					<div class="defense-content">
 						<div class="defense-header">
