@@ -812,11 +812,9 @@
 
 		if (!showShipping) return;
 
-		const d3 = d3Module;
-
 		// Draw shipping routes with dotted lines
 		SHIPPING_ROUTES.forEach((route) => {
-			const lineGenerator = d3
+			const lineGenerator = d3Module
 				.line<[number, number]>()
 				.x((d) => projection(d)?.[0] || 0)
 				.y((d) => projection(d)?.[1] || 0);
