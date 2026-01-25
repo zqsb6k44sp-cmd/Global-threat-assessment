@@ -5,7 +5,6 @@
 	import {
 		NewsPanel,
 		MarketsPanel,
-		HeatmapPanel,
 		CommoditiesPanel,
 		CryptoPanel,
 		MainCharPanel,
@@ -23,8 +22,6 @@
 		SituationPanel,
 		WorldLeadersPanel,
 		PrinterPanel,
-		Nifty50HeatmapPanel,
-		NiftyNext50HeatmapPanel,
 		ConflictTrackerPanel,
 		DefenseStocksPanel
 	} from '$lib/components/panels';
