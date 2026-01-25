@@ -14,7 +14,7 @@
 
 	// Type declaration for TradingView
 	interface TradingViewWidget {
-		widget: new (config: Record<string, unknown>) => void;
+		MediumSizeWidget: new (config: Record<string, unknown>) => void;
 	}
 
 	interface WindowWithTradingView extends Window {
@@ -24,15 +24,37 @@
 	onMount(() => {
 		// Load TradingView script dynamically
 		const script = document.createElement('script');
-		script.src = 'https://s3.tradingview.com/tv.js';
+		script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-stock-heatmap.js';
 		script.async = true;
+		script.type = 'text/javascript';
+		script.innerHTML = JSON.stringify({
+			dataSource: 'AllIN',
+			exchanges: [],
+			grouping: 'sector',
+			blockSize: 'market_cap_basic',
+			blockColor: 'change',
+			locale: 'en',
+			symbolUrl: '',
+			colorTheme: 'dark',
+			hasTopBar: false,
+			isDataSetEnabled: false,
+			isZoomEnabled: true,
+			hasSymbolTooltip: true,
+			width: '100%',
+			height: '100%'
+		});
+
+		if (widgetContainer) {
+			widgetContainer.appendChild(script);
+		}
+
 		script.onload = () => {
-			initWidget();
+			widgetLoaded = true;
 		};
+
 		script.onerror = () => {
-			widgetError = 'Failed to load TradingView widget';
+			widgetError = 'Failed to load TradingView heatmap widget';
 		};
-		document.head.appendChild(script);
 
 		return () => {
 			// Cleanup: remove script on component unmount
@@ -41,40 +63,13 @@
 			}
 		};
 	});
-
-	function initWidget() {
-		const win = window as WindowWithTradingView;
-		if (typeof win.TradingView !== 'undefined' && widgetContainer) {
-			try {
-				new win.TradingView.widget({
-					autosize: true,
-					symbol: 'NSE:NIFTY',
-					interval: 'D',
-					timezone: 'Asia/Kolkata',
-					theme: 'dark',
-					style: '1',
-					locale: 'en',
-					toolbar_bg: '#0a0f0d',
-					enable_publishing: false,
-					hide_top_toolbar: false,
-					hide_legend: false,
-					save_image: false,
-					container_id: 'tradingview_nifty50'
-				});
-				widgetLoaded = true;
-			} catch (e) {
-				widgetError = 'Failed to initialize TradingView widget';
-				console.error('TradingView widget error:', e);
-			}
-		}
-	}
 </script>
 
-<Panel id="nse50" title="NSE India Nifty 50 Tracker" {loading} error={error || widgetError}>
+<Panel id="nse50" title="India Market Heatmap" {loading} error={error || widgetError}>
 	<div class="tradingview-widget-container" bind:this={widgetContainer}>
-		<div class="tradingview-widget" id="tradingview_nifty50"></div>
+		<div class="tradingview-widget-container__widget"></div>
 		{#if !widgetLoaded && !widgetError}
-			<div class="loading-state">Loading chart...</div>
+			<div class="loading-state">Loading heatmap...</div>
 		{/if}
 	</div>
 </Panel>
@@ -89,10 +84,10 @@
 		overflow: hidden;
 	}
 
-	.tradingview-widget {
+	.tradingview-widget-container__widget {
 		width: 100%;
 		height: 100%;
-		min-height: 400px;
+		min-height: 500px;
 	}
 
 	.loading-state {
@@ -105,8 +100,8 @@
 	}
 
 	@media (max-width: 768px) {
-		.tradingview-widget {
-			min-height: 350px;
+		.tradingview-widget-container__widget {
+			min-height: 400px;
 		}
 	}
 </style>
