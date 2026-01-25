@@ -29,6 +29,7 @@ export const PRESETS: Record<string, Preset> = {
 			'markets',
 			'commodities',
 			'crypto',
+			'nse50',
 			'polymarket',
 			'whales',
 			'printer',
@@ -98,6 +99,8 @@ export const PRESETS: Record<string, Preset> = {
 			'correlation',
 			'narrative',
 			'bloomberg',
+			'defense',
+			'nse50',
 			'fishing',
 			'globalfishing'
 		]

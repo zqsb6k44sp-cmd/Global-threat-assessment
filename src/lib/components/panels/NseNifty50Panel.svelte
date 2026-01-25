@@ -19,7 +19,7 @@
 		script.async = true;
 		script.type = 'text/javascript';
 		script.innerHTML = JSON.stringify({
-			dataSource: 'India',
+			dataSource: 'NIFTY',
 			exchanges: [],
 			grouping: 'sector',
 			blockSize: 'market_cap_basic',
