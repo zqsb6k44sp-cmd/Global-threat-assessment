@@ -5,7 +5,6 @@
 	import {
 		NewsPanel,
 		MarketsPanel,
-		HeatmapPanel,
 		CommoditiesPanel,
 		CryptoPanel,
 		MainCharPanel,
@@ -23,22 +22,10 @@
 		SituationPanel,
 		WorldLeadersPanel,
 		PrinterPanel,
-		Nifty50HeatmapPanel,
-		NiftyNext50HeatmapPanel,
 		ConflictTrackerPanel,
 		DefenseStocksPanel
 	} from '$lib/components/panels';
-	import {
-		news,
-		markets,
-		monitors,
-		settings,
-		refresh,
-		allNewsItems,
-		nifty50,
-		niftyNext50,
-		defense
-	} from '$lib/stores';
+	import { news, markets, monitors, settings, refresh, allNewsItems, defense } from '$lib/stores';
 	import {
 		fetchAllNews,
 		fetchAllMarkets,
@@ -47,8 +34,6 @@
 		fetchGovContracts,
 		fetchLayoffs,
 		fetchWorldLeaders,
-		fetchNifty50,
-		fetchNiftyNext50,
 		fetchDefenseStocks
 	} from '$lib/api';
 	import type { Prediction, WhaleTransaction, Contract, Layoff } from '$lib/api';
@@ -126,51 +111,15 @@
 		}
 	}
 
-	async function loadNiftyData() {
-		if (!isPanelVisible('nifty50') && !isPanelVisible('niftynext50')) return;
-
+	async function loadDefenseData() {
+		if (!isPanelVisible('defense')) return;
 		try {
-			const promises = [];
-
-			if (isPanelVisible('nifty50')) {
-				nifty50.setLoading(true);
-				promises.push(
-					fetchNifty50()
-						.then((data) => nifty50.setItems(data))
-						.catch((error) => {
-							console.error('Failed to load Nifty 50:', error);
-							nifty50.setError(String(error));
-						})
-				);
-			}
-
-			if (isPanelVisible('niftynext50')) {
-				niftyNext50.setLoading(true);
-				promises.push(
-					fetchNiftyNext50()
-						.then((data) => niftyNext50.setItems(data))
-						.catch((error) => {
-							console.error('Failed to load Nifty Next 50:', error);
-							niftyNext50.setError(String(error));
-						})
-				);
-			}
-
-			if (isPanelVisible('defense')) {
-				defense.setLoading(true);
-				promises.push(
-					fetchDefenseStocks()
-						.then((data) => defense.setItems(data))
-						.catch((error) => {
-							console.error('Failed to load Defense Stocks:', error);
-							defense.setError(String(error));
-						})
-				);
-			}
-
-			await Promise.all(promises);
+			defense.setLoading(true);
+			const data = await fetchDefenseStocks();
+			defense.setItems(data);
 		} catch (error) {
-			console.error('Failed to load Nifty data:', error);
+			console.error('Failed to load Defense Stocks:', error);
+			defense.setError(String(error));
 		}
 	}
 
@@ -178,7 +127,7 @@
 	async function handleRefresh() {
 		refresh.startRefresh();
 		try {
-			await Promise.all([loadNews(), loadMarkets(), loadNiftyData()]);
+			await Promise.all([loadNews(), loadMarkets(), loadDefenseData()]);
 			refresh.endRefresh();
 		} catch (error) {
 			refresh.endRefresh([String(error)]);
@@ -240,7 +189,7 @@
 					loadMarkets(),
 					loadMiscData(),
 					loadWorldLeaders(),
-					loadNiftyData()
+					loadDefenseData()
 				]);
 				refresh.endRefresh();
 			} catch (error) {
@@ -250,38 +199,8 @@
 		initialLoad();
 		refresh.setupAutoRefresh(handleRefresh);
 
-		// Setup auto-refresh for Nifty data (60 seconds)
-		async function refreshNifty50() {
-			if (!isPanelVisible('nifty50')) return;
-			try {
-				nifty50.setLoading(true);
-				const data = await fetchNifty50();
-				nifty50.setItems(data);
-			} catch (error) {
-				console.error('Failed to refresh Nifty 50:', error);
-				nifty50.setError(String(error));
-			}
-		}
-
-		async function refreshNiftyNext50() {
-			if (!isPanelVisible('niftynext50')) return;
-			try {
-				niftyNext50.setLoading(true);
-				const data = await fetchNiftyNext50();
-				niftyNext50.setItems(data);
-			} catch (error) {
-				console.error('Failed to refresh Nifty Next 50:', error);
-				niftyNext50.setError(String(error));
-			}
-		}
-
-		nifty50.setupAutoRefresh(refreshNifty50);
-		niftyNext50.setupAutoRefresh(refreshNiftyNext50);
-
 		return () => {
 			refresh.stopAutoRefresh();
-			nifty50.stopAutoRefresh();
-			niftyNext50.stopAutoRefresh();
 		};
 	});
 </script>
@@ -353,24 +272,6 @@
 			{#if isPanelVisible('markets')}
 				<div class="panel-slot">
 					<MarketsPanel />
-				</div>
-			{/if}
-
-			{#if isPanelVisible('heatmap')}
-				<div class="panel-slot">
-					<HeatmapPanel />
-				</div>
-			{/if}
-
-			{#if isPanelVisible('nifty50')}
-				<div class="panel-slot">
-					<Nifty50HeatmapPanel />
-				</div>
-			{/if}
-
-			{#if isPanelVisible('niftynext50')}
-				<div class="panel-slot">
-					<NiftyNext50HeatmapPanel />
 				</div>
 			{/if}
 

@@ -1,7 +1,6 @@
 // Panel components barrel export
 export { default as NewsPanel } from './NewsPanel.svelte';
 export { default as MarketsPanel } from './MarketsPanel.svelte';
-export { default as HeatmapPanel } from './HeatmapPanel.svelte';
 export { default as CommoditiesPanel } from './CommoditiesPanel.svelte';
 export { default as CryptoPanel } from './CryptoPanel.svelte';
 export { default as MainCharPanel } from './MainCharPanel.svelte';
@@ -20,8 +19,6 @@ export { default as FishingMapPanel } from './FishingMapPanel.svelte';
 export { default as GlobalFishingWatchPanel } from './GlobalFishingWatchPanel.svelte';
 export { default as MarineTrafficPanel } from './MarineTrafficPanel.svelte';
 export { default as WorldLeadersPanel } from './WorldLeadersPanel.svelte';
-export { default as Nifty50HeatmapPanel } from './Nifty50HeatmapPanel.svelte';
-export { default as NiftyNext50HeatmapPanel } from './NiftyNext50HeatmapPanel.svelte';
 export { default as BloombergFeedPanel } from './BloombergFeedPanel.svelte';
 export { default as ConflictTrackerPanel } from './ConflictTrackerPanel.svelte';
 export { default as DefenseStocksPanel } from './DefenseStocksPanel.svelte';

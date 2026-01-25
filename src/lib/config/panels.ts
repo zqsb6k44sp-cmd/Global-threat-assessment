@@ -14,7 +14,6 @@ export type PanelId =
 	| 'tech'
 	| 'finance'
 	| 'gov'
-	| 'heatmap'
 	| 'markets'
 	| 'monitors'
 	| 'commodities'
@@ -33,8 +32,6 @@ export type PanelId =
 	| 'intel'
 	| 'correlation'
 	| 'narrative'
-	| 'nifty50'
-	| 'niftynext50'
 	| 'fishing'
 	| 'globalfishing'
 	| 'marinetraffic'
@@ -48,7 +45,6 @@ export const PANELS: Record<PanelId, PanelConfig> = {
 	tech: { name: 'Technology / AI', priority: 1 },
 	finance: { name: 'Financial', priority: 1 },
 	gov: { name: 'Government / Policy', priority: 2 },
-	heatmap: { name: 'Sector Heatmap', priority: 1 },
 	markets: { name: 'Markets', priority: 1 },
 	monitors: { name: 'My Monitors', priority: 1 },
 	commodities: { name: 'Commodities / VIX', priority: 2 },
@@ -67,8 +63,6 @@ export const PANELS: Record<PanelId, PanelConfig> = {
 	intel: { name: 'Intel Feed', priority: 2 },
 	correlation: { name: 'Correlation Engine', priority: 1 },
 	narrative: { name: 'Narrative Tracker', priority: 1 },
-	nifty50: { name: 'Nifty 50 Heatmap', priority: 2 },
-	niftynext50: { name: 'Nifty Next 50 Heatmap', priority: 2 },
 	fishing: { name: 'Deep Sea Fishing Traffic', priority: 2 },
 	globalfishing: { name: 'Global Fishing Watch', priority: 2 },
 	marinetraffic: { name: 'Marine Traffic', priority: 3 },

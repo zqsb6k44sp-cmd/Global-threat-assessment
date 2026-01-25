@@ -13,7 +13,7 @@ export interface BloombergState {
 	lastUpdated: number | null;
 }
 
-const BLOOMBERG_AUTO_REFRESH_INTERVAL = 2 * 60 * 1000; // 2 minutes
+const BLOOMBERG_AUTO_REFRESH_INTERVAL = 30 * 1000; // 30 seconds
 
 // Create initial state
 function createInitialState(): BloombergState {

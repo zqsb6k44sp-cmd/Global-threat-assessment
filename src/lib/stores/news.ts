@@ -107,13 +107,15 @@ function createNewsStore() {
 		 */
 		setItems(category: NewsCategory, items: NewsItem[]) {
 			const enrichedItems = items.map(enrichNewsItem);
+			// Sort by timestamp descending (newest first)
+			const sortedItems = enrichedItems.sort((a, b) => b.timestamp - a.timestamp);
 
 			update((state) => ({
 				...state,
 				categories: {
 					...state.categories,
 					[category]: {
-						items: enrichedItems,
+						items: sortedItems,
 						loading: false,
 						error: null,
 						lastUpdated: Date.now()
@@ -139,7 +141,7 @@ function createNewsStore() {
 						...state.categories,
 						[category]: {
 							...state.categories[category],
-							items: [...existing, ...newItems],
+							items: [...existing, ...newItems].sort((a, b) => b.timestamp - a.timestamp),
 							loading: false,
 							error: null,
 							lastUpdated: Date.now()
@@ -165,7 +167,7 @@ function createNewsStore() {
 			for (const category of NEWS_CATEGORIES) {
 				allItems.push(...state.categories[category].items);
 			}
-			return allItems;
+			return allItems.sort((a, b) => b.timestamp - a.timestamp);
 		},
 
 		/**
@@ -227,7 +229,7 @@ export const allNewsItems = derived(news, ($news) => {
 	for (const category of NEWS_CATEGORIES) {
 		allItems.push(...$news.categories[category].items);
 	}
-	return allItems;
+	return allItems.sort((a, b) => b.timestamp - a.timestamp);
 });
 
 // Derived store for alerts

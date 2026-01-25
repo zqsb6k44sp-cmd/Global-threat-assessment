@@ -17,12 +17,27 @@
 		showDescription = false,
 		compact = false
 	}: Props = $props();
+
+	// Check if article is fresh (less than 1 minute old)
+	const isFresh = $derived(() => {
+		const now = Date.now();
+		const ageMs = now - item.timestamp;
+		return ageMs < 60000; // 60 seconds
+	});
 </script>
 
-<div class="news-item" class:alert={showAlert && item.isAlert} class:compact>
+<div
+	class="news-item"
+	class:alert={showAlert && item.isAlert}
+	class:compact
+	class:fresh={isFresh()}
+>
 	{#if showSource}
 		<div class="item-source">
 			{item.source}
+			{#if isFresh()}
+				<span class="new-badge">NEW</span>
+			{/if}
 			{#if showAlert && item.isAlert}
 				<span class="alert-tag">ALERT</span>
 			{/if}
@@ -49,6 +64,7 @@
 	.news-item {
 		padding: 0.5rem 0;
 		border-bottom: 1px solid var(--border);
+		transition: background-color 0.3s ease;
 	}
 
 	.news-item:last-child {
@@ -57,6 +73,15 @@
 
 	.news-item.compact {
 		padding: 0.35rem 0;
+	}
+
+	.news-item.fresh {
+		background: rgba(16, 185, 129, 0.05);
+		margin: 0 -0.5rem;
+		padding: 0.5rem;
+		border-radius: 4px;
+		border-left: 3px solid rgba(16, 185, 129, 0.4);
+		animation: pulse-fresh 2s ease-in-out infinite;
 	}
 
 	.news-item.alert {
@@ -68,6 +93,16 @@
 		border-bottom: 1px solid rgba(255, 68, 68, 0.2);
 	}
 
+	@keyframes pulse-fresh {
+		0%,
+		100% {
+			background: rgba(16, 185, 129, 0.05);
+		}
+		50% {
+			background: rgba(16, 185, 129, 0.08);
+		}
+	}
+
 	.item-source {
 		font-size: 0.55rem;
 		color: var(--text-secondary);
@@ -77,6 +112,28 @@
 		display: flex;
 		align-items: center;
 		gap: 0.4rem;
+	}
+
+	.new-badge {
+		background: #10b981;
+		color: white;
+		font-size: 0.5rem;
+		padding: 0.1rem 0.3rem;
+		border-radius: 2px;
+		font-weight: 600;
+		animation: pulse-badge 1.5s ease-in-out infinite;
+	}
+
+	@keyframes pulse-badge {
+		0%,
+		100% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		50% {
+			transform: scale(1.05);
+			opacity: 0.9;
+		}
 	}
 
 	.alert-tag {

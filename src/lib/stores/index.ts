@@ -62,20 +62,12 @@ export {
 	autoRefreshEnabled,
 	timeSinceRefresh,
 	categoriesWithErrors,
-	REFRESH_STAGES,
+	REFRESH_STAGES, REFRESH_INTERVALS,
 	type RefreshStage,
 	type StageConfig,
 	type RefreshState
 } from './refresh';
 
-// Nifty stores
-export {
-	nifty50,
-	niftyNext50,
-	isNifty50Loading,
-	isNiftyNext50Loading,
-	type NiftyState
-} from './nifty';
 
 // Bloomberg store
 export { bloomberg, type BloombergState } from './bloomberg';

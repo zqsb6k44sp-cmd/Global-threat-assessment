@@ -27,7 +27,6 @@ export const PRESETS: Record<string, Preset> = {
 		description: 'Market-focused dashboard with stocks, crypto, and commodities',
 		panels: [
 			'markets',
-			'heatmap',
 			'commodities',
 			'crypto',
 			'polymarket',
@@ -80,7 +79,6 @@ export const PRESETS: Record<string, Preset> = {
 			'tech',
 			'finance',
 			'gov',
-			'heatmap',
 			'markets',
 			'monitors',
 			'commodities',
@@ -99,8 +97,6 @@ export const PRESETS: Record<string, Preset> = {
 			'intel',
 			'correlation',
 			'narrative',
-			'nifty50',
-			'niftynext50',
 			'bloomberg',
 			'fishing',
 			'globalfishing'

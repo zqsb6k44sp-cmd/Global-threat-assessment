@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Modal from './Modal.svelte';
-	import { settings } from '$lib/stores';
+	import { settings, refresh, REFRESH_INTERVALS } from '$lib/stores';
 	import { PANELS, type PanelId } from '$lib/config';
 
 	interface Props {
@@ -11,6 +11,22 @@
 
 	let { open = false, onClose, onReconfigure }: Props = $props();
 
+	const intervalOptions = [
+		{ label: '10 seconds (Fast)', value: REFRESH_INTERVALS.REALTIME_FAST },
+		{ label: '30 seconds (Default)', value: REFRESH_INTERVALS.REALTIME },
+		{ label: '1 minute', value: REFRESH_INTERVALS.MODERATE },
+		{ label: '5 minutes', value: REFRESH_INTERVALS.SLOW }
+	];
+
+	let selectedInterval = $state($refresh.autoRefreshInterval || REFRESH_INTERVALS.REALTIME);
+	let autoRefreshEnabled = $state($refresh.autoRefreshEnabled);
+
+	// Watch for changes to refresh store and update local state
+	$effect(() => {
+		selectedInterval = $refresh.autoRefreshInterval || REFRESH_INTERVALS.REALTIME;
+		autoRefreshEnabled = $refresh.autoRefreshEnabled;
+	});
+
 	function handleTogglePanel(panelId: PanelId) {
 		settings.togglePanel(panelId);
 	}
@@ -18,10 +34,51 @@
 	function handleResetPanels() {
 		settings.reset();
 	}
+
+	function handleRefreshIntervalChange(e: Event) {
+		const target = e.target as HTMLSelectElement;
+		const newInterval = parseInt(target.value, 10);
+		selectedInterval = newInterval;
+		refresh.setAutoRefreshInterval(newInterval);
+	}
+
+	function handleToggleAutoRefresh() {
+		autoRefreshEnabled = !autoRefreshEnabled;
+		refresh.toggleAutoRefresh();
+	}
 </script>
 
 <Modal {open} title="Settings" {onClose}>
 	<div class="settings-sections">
+		<section class="settings-section">
+			<h3 class="section-title">Real-Time Refresh</h3>
+			<p class="section-desc">Configure how often data is automatically refreshed</p>
+
+			<label class="toggle-row">
+				<input type="checkbox" checked={autoRefreshEnabled} onchange={handleToggleAutoRefresh} />
+				<span class="toggle-label">Auto-refresh enabled</span>
+			</label>
+
+			<div class="interval-selector">
+				<label for="refresh-interval" class="interval-label">Refresh interval:</label>
+				<select
+					id="refresh-interval"
+					class="interval-select"
+					value={selectedInterval}
+					onchange={handleRefreshIntervalChange}
+					disabled={!autoRefreshEnabled}
+				>
+					{#each intervalOptions as option}
+						<option value={option.value}>{option.label}</option>
+					{/each}
+				</select>
+			</div>
+
+			{#if selectedInterval === REFRESH_INTERVALS.REALTIME_FAST}
+				<p class="warning-text">⚠️ 10-second refresh may use more bandwidth and API resources</p>
+			{/if}
+		</section>
+
 		<section class="settings-section">
 			<h3 class="section-title">Enabled Panels</h3>
 			<p class="section-desc">Toggle panels on/off to customize your dashboard</p>
@@ -80,6 +137,60 @@
 		font-size: 0.65rem;
 		color: var(--text-muted);
 		margin: 0;
+	}
+
+	.toggle-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0;
+		cursor: pointer;
+	}
+
+	.toggle-row input[type='checkbox'] {
+		accent-color: var(--accent);
+		cursor: pointer;
+	}
+
+	.toggle-label {
+		font-size: 0.7rem;
+		color: var(--text-primary);
+	}
+
+	.interval-selector {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+	}
+
+	.interval-label {
+		font-size: 0.65rem;
+		color: var(--text-secondary);
+	}
+
+	.interval-select {
+		padding: 0.5rem;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		color: var(--text-primary);
+		font-size: 0.7rem;
+		cursor: pointer;
+	}
+
+	.interval-select:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.warning-text {
+		font-size: 0.6rem;
+		color: #f59e0b;
+		margin: 0;
+		padding: 0.4rem 0.6rem;
+		background: rgba(245, 158, 11, 0.1);
+		border: 1px solid rgba(245, 158, 11, 0.3);
+		border-radius: 4px;
 	}
 
 	.panels-grid {
