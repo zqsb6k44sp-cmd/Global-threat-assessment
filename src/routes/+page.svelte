@@ -23,7 +23,8 @@
 		WorldLeadersPanel,
 		PrinterPanel,
 		ConflictTrackerPanel,
-		DefenseStocksPanel
+		DefenseStocksPanel,
+		NseNifty50Panel
 	} from '$lib/components/panels';
 	import { news, markets, monitors, settings, refresh, allNewsItems, defense } from '$lib/stores';
 	import {
@@ -423,6 +424,13 @@
 			{#if isPanelVisible('defense')}
 				<div class="panel-slot">
 					<DefenseStocksPanel />
+				</div>
+			{/if}
+
+			<!-- NSE India Nifty 50 Panel - Full width -->
+			{#if isPanelVisible('nse50')}
+				<div class="panel-slot map-slot">
+					<NseNifty50Panel />
 				</div>
 			{/if}
 

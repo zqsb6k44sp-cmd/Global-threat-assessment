@@ -32,6 +32,7 @@ export type PanelId =
 	| 'intel'
 	| 'correlation'
 	| 'narrative'
+	| 'nse50'
 	| 'fishing'
 	| 'globalfishing'
 	| 'marinetraffic'
@@ -63,6 +64,7 @@ export const PANELS: Record<PanelId, PanelConfig> = {
 	intel: { name: 'Intel Feed', priority: 2 },
 	correlation: { name: 'Correlation Engine', priority: 1 },
 	narrative: { name: 'Narrative Tracker', priority: 1 },
+	nse50: { name: 'NSE India Nifty 50', priority: 2 },
 	fishing: { name: 'Deep Sea Fishing Traffic', priority: 2 },
 	globalfishing: { name: 'Global Fishing Watch', priority: 2 },
 	marinetraffic: { name: 'Marine Traffic', priority: 3 },

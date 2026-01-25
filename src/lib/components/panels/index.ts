@@ -22,3 +22,4 @@ export { default as WorldLeadersPanel } from './WorldLeadersPanel.svelte';
 export { default as BloombergFeedPanel } from './BloombergFeedPanel.svelte';
 export { default as ConflictTrackerPanel } from './ConflictTrackerPanel.svelte';
 export { default as DefenseStocksPanel } from './DefenseStocksPanel.svelte';
+export { default as NseNifty50Panel } from './NseNifty50Panel.svelte';
