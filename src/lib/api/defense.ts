@@ -19,9 +19,6 @@ export interface DefenseStock {
  * Generate logo URL for defense stock using multiple strategies
  */
 function getDefenseLogoUrl(symbol: string): string {
-	// Try Yahoo Finance logo API first
-	const yahooLogoUrl = `https://storage.googleapis.com/iex/api/logos/${symbol}.png`;
-
 	// Fallback domain map for Clearbit
 	const domainMap: Record<string, string> = {
 		LMT: 'lockheedmartin.com',
@@ -37,13 +34,13 @@ function getDefenseLogoUrl(symbol: string): string {
 	};
 
 	const domain = domainMap[symbol];
-	// Use Clearbit as primary, with Yahoo Finance as fallback in the img tag
 	if (domain) {
+		// Use Clearbit as primary logo source
 		return `https://logo.clearbit.com/${domain}`;
 	}
 
-	// Final fallback to Yahoo Finance logo or generic avatar
-	return yahooLogoUrl;
+	// Fallback to IEX logo API
+	return `https://storage.googleapis.com/iex/api/logos/${symbol}.png`;
 }
 
 /**

@@ -29,7 +29,7 @@
 							src={stock.logoUrl}
 							alt={stock.name}
 							loading="lazy"
-							onerror={(e) => handleImageError(e, stock.symbol)}
+							on:error={(e) => handleImageError(e, stock.symbol)}
 						/>
 					</div>
 					<div class="defense-content">
