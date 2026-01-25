@@ -1,8 +1,8 @@
 /**
- * Defense Stocks API - Fetch top defense stocks from Finnhub
+ * Defense Stocks API - Fetch top defense stocks from Yahoo Finance
  */
 
-import { logger, FINNHUB_API_KEY, FINNHUB_BASE_URL } from '$lib/config/api';
+import { logger, fetchWithProxy } from '$lib/config/api';
 
 export interface DefenseStock {
 	symbol: string;
@@ -14,54 +14,61 @@ export interface DefenseStock {
 	logoUrl: string;
 }
 
-interface FinnhubQuote {
-	c: number; // Current price
-	d: number; // Change
-	dp: number; // Percent change
-	h: number; // High price of the day
-	l: number; // Low price of the day
-	o: number; // Open price of the day
-	pc: number; // Previous close price
-	t: number; // Timestamp
+interface YahooQuoteResponse {
+	quoteResponse: {
+		result: Array<{
+			symbol: string;
+			regularMarketPrice?: number;
+			regularMarketChange?: number;
+			regularMarketChangePercent?: number;
+		}>;
+		error: null | { code: string; description: string };
+	};
 }
 
 /**
- * Check if Finnhub API key is configured
+ * Fetch quotes from Yahoo Finance
  */
-function hasFinnhubApiKey(): boolean {
-	return Boolean(FINNHUB_API_KEY && FINNHUB_API_KEY.length > 0);
-}
+async function fetchYahooQuotes(
+	symbols: string[]
+): Promise<Map<string, YahooQuoteResponse['quoteResponse']['result'][0]>> {
+	const quotesMap = new Map();
 
-/**
- * Fetch a quote from Finnhub
- */
-async function fetchFinnhubQuote(symbol: string): Promise<FinnhubQuote | null> {
 	try {
-		const url = `${FINNHUB_BASE_URL}/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_API_KEY}`;
-		const response = await fetch(url);
+		const symbolsParam = symbols.join(',');
+		const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbolsParam}`;
+
+		logger.log('Defense API', `Fetching quotes for ${symbols.length} symbols from Yahoo Finance`);
+
+		const response = await fetchWithProxy(yahooUrl);
 
 		if (!response.ok) {
 			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 		}
 
-		const data: FinnhubQuote = await response.json();
+		const data: YahooQuoteResponse = await response.json();
 
-		// Finnhub returns all zeros when symbol not found
-		if (data.c === 0 && data.pc === 0) {
-			return null;
+		if (data.quoteResponse?.result) {
+			data.quoteResponse.result.forEach((quote) => {
+				quotesMap.set(quote.symbol, quote);
+			});
 		}
 
-		return data;
+		return quotesMap;
 	} catch (error) {
-		logger.error('Defense API', `Error fetching quote for ${symbol}:`, error);
-		return null;
+		logger.error('Defense API', 'Error fetching Yahoo Finance quotes:', error);
+		return quotesMap;
 	}
 }
 
 /**
- * Generate logo URL for defense stock
+ * Generate logo URL for defense stock using multiple strategies
  */
 function getDefenseLogoUrl(symbol: string): string {
+	// Try Yahoo Finance logo API first
+	const yahooLogoUrl = `https://storage.googleapis.com/iex/api/logos/${symbol}.png`;
+
+	// Fallback domain map for Clearbit
 	const domainMap: Record<string, string> = {
 		LMT: 'lockheedmartin.com',
 		RTX: 'rtx.com',
@@ -76,13 +83,13 @@ function getDefenseLogoUrl(symbol: string): string {
 	};
 
 	const domain = domainMap[symbol];
+	// Use Clearbit as primary, with Yahoo Finance as fallback in the img tag
 	if (domain) {
 		return `https://logo.clearbit.com/${domain}`;
 	}
 
-	// Fallback to generic placeholder
-	const firstLetter = symbol.charAt(0);
-	return `https://ui-avatars.com/api/?name=${firstLetter}&size=60&background=random`;
+	// Final fallback to Yahoo Finance logo or generic avatar
+	return yahooLogoUrl;
 }
 
 /**
@@ -140,11 +147,7 @@ const DEFENSE_STOCKS = [
 /**
  * Create an empty defense stock item
  */
-function createEmptyDefenseStock(
-	symbol: string,
-	name: string,
-	description: string
-): DefenseStock {
+function createEmptyDefenseStock(symbol: string, name: string, description: string): DefenseStock {
 	return {
 		symbol,
 		name,
@@ -157,7 +160,7 @@ function createEmptyDefenseStock(
 }
 
 /**
- * Fetch defense stocks data
+ * Fetch defense stocks data from Yahoo Finance
  */
 export async function fetchDefenseStocks(): Promise<DefenseStock[]> {
 	const createEmptyStocks = () =>
@@ -165,30 +168,25 @@ export async function fetchDefenseStocks(): Promise<DefenseStock[]> {
 			createEmptyDefenseStock(stock.symbol, stock.name, stock.description)
 		);
 
-	if (!hasFinnhubApiKey()) {
-		logger.warn('Defense API', 'Finnhub API key not configured');
-		return createEmptyStocks();
-	}
-
 	try {
-		logger.log('Defense API', 'Fetching defense stocks from Finnhub');
+		logger.log('Defense API', 'Fetching defense stocks from Yahoo Finance');
 
-		const quotes = await Promise.all(
-			DEFENSE_STOCKS.map(async (stock) => {
-				const quote = await fetchFinnhubQuote(stock.symbol);
-				return { stock, quote };
-			})
-		);
+		const symbols = DEFENSE_STOCKS.map((s) => s.symbol);
+		const quotesMap = await fetchYahooQuotes(symbols);
 
-		return quotes.map(({ stock, quote }) => ({
-			symbol: stock.symbol,
-			name: stock.name,
-			description: stock.description,
-			price: quote?.c ?? NaN,
-			change: quote?.d ?? NaN,
-			changePercent: quote?.dp ?? NaN,
-			logoUrl: getDefenseLogoUrl(stock.symbol)
-		}));
+		return DEFENSE_STOCKS.map((stock) => {
+			const quote = quotesMap.get(stock.symbol);
+
+			return {
+				symbol: stock.symbol,
+				name: stock.name,
+				description: stock.description,
+				price: quote?.regularMarketPrice ?? NaN,
+				change: quote?.regularMarketChange ?? NaN,
+				changePercent: quote?.regularMarketChangePercent ?? NaN,
+				logoUrl: getDefenseLogoUrl(stock.symbol)
+			};
+		});
 	} catch (error) {
 		logger.error('Defense API', 'Error fetching defense stocks:', error);
 		return createEmptyStocks();

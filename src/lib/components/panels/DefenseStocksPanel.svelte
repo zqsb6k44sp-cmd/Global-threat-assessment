@@ -18,7 +18,14 @@
 				{@const changeClass = getChangeClass(stock.changePercent)}
 				<div class="defense-item">
 					<div class="defense-logo">
-						<img src={stock.logoUrl} alt={stock.name} loading="lazy" />
+						<img
+							src={stock.logoUrl}
+							alt={stock.name}
+							loading="lazy"
+							onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={stock.symbol.charAt(
+								0
+							)}&size=60&background=random&color=fff';"
+						/>
 					</div>
 					<div class="defense-content">
 						<div class="defense-header">
